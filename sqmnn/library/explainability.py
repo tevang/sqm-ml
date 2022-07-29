@@ -38,5 +38,6 @@ def _plot_shap(model, x):
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(x)
 
-    print(shap.summary_plot(shap_values, x.values,
-                            plot_type="bar", class_names=[0, 1], feature_names=x.columns))
+    p = shap.summary_plot(shap_values, x.values,
+                            plot_type="bar", class_names=[0, 1], feature_names=x.columns)
+    return p

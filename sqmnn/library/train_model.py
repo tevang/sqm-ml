@@ -1,9 +1,9 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC, NuSVC
-
 from sqmnn.learning_models.logistic_regression.logistic_regression import LogisticRegressionGroupedSamples
 from sqmnn.library.explainability import _return_perm_imp, _plot_shap
 

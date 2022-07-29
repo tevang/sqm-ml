@@ -4,8 +4,9 @@ from umap import UMAP
 def umap_compressor(X_train, X_test):
 
     ncomp = 2
-    umap_reducer = UMAP(n_neighbors=15, min_dist=0.1, n_components=ncomp, metric='hamming')
+    umap_reducer = UMAP(n_neighbors=500, min_dist=0.1, n_components=ncomp, metric='euclidean')
     umap_reducer.fit(X_train)
+    print('======================', X_train.shape)
     # TODO ump column names
     return pd.DataFrame(umap_reducer.transform(X_train),
                         columns=['ump%i' % u for u in range(1, ncomp+1)]), \
@@ -31,3 +32,23 @@ def umap_compress_fingerprint(features_df, crossval_protein, xtest_protein,
                       test_features_df[other_columns].reset_index().join(test_compressed_df)]) \
         .pipe(lambda df: df.rename(columns={c: '%s_%s' % (fingerprint_type, c)
                                             for c in df.filter(regex='^ump[0-9]+$').columns}))
+
+
+def _ump_trans(x):
+    """
+
+    Parameters
+    ----------
+    x
+
+    Returns
+    -------
+
+    """
+    from umap import UMAP
+    ncomp = 2
+    umap_reducer = UMAP(n_neighbors=15, min_dist=0.1, n_components=ncomp, metric='hamming')
+    umap_reducer.fit(x)
+    ump_df = pd.DataFrame(umap_reducer.transform(x),
+                          columns=['ump%i' % u for u in range(1, ncomp+1)])
+    return ump_df
