@@ -2,10 +2,10 @@
 import os
 from sklearn.model_selection import ParameterGrid
 
-from lib.global_fun import list_files
+from library.global_fun import list_files
 from SQMNN_MASTER_SCRIPT import launch_pipeline
 from SQMNN_pipeline_settings import Settings
-from lib.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
+from library.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
 
 CPUs = 16
 
