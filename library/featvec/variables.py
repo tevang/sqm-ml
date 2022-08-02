@@ -1,4 +1,4 @@
-from lib.featvec.fingerprints_functions import comp_ECFP, comp_FCFP, comp_RDK5, comp_CSFP, comp_AP, comp_TT, comp_AvalonFP, \
+from library.featvec.fingerprints_functions import comp_ECFP, comp_FCFP, comp_RDK5, comp_CSFP, comp_AP, comp_TT, comp_AvalonFP, \
     comp_MACCS, comp_ErgFP, comp_2Dpp, comp_3Dpp, comp_mol2vec, comp_physchem, comp_MAP4
 
 fingerprint_functions_dict = {

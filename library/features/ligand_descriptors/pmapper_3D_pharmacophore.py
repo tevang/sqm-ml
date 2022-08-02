@@ -3,8 +3,8 @@ import os
 import pandas as pd
 from pmapper.pharmacophore import Pharmacophore as P
 from rdkit import Chem
-from lib.utils.print_functions import ColorPrint
-from lib.global_fun import replace_alt, get_poseID, get_frameID, get_structvar, list_files
+from library.utils.print_functions import ColorPrint
+from library.global_fun import replace_alt, get_poseID, get_frameID, get_structvar, list_files
 from library.features.protein_ligand_complex_descriptors.PLEC import split_complex_pdb
 
 

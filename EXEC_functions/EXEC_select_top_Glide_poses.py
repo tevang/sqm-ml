@@ -1,4 +1,4 @@
-from lib.global_fun import get_structvar
+from library.global_fun import get_structvar
 from commons.EXEC_caching import EXEC_caching_decorator
 import logging
 

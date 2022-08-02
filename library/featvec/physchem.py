@@ -3,8 +3,8 @@ import multiprocessing
 import numpy as np
 from rdkit import Chem
 
-from lib.molfile.ligfile_parser import load_structure_file
-from lib.utils.print_functions import ColorPrint
+from library.molfile.ligfile_parser import load_structure_file
+from library.utils.print_functions import ColorPrint
 
 
 def calculate_physchem_descriptors_from_mols(mols,
@@ -33,7 +33,7 @@ def calculate_physchem_descriptors_from_mols(mols,
 
     # NEW WAY USING MORDRED
     from mordred import Calculator, descriptors
-    from lib.physchem.mordred_descriptors import mordred_dfunc
+    from library.physchem.mordred_descriptors import mordred_dfunc
     if len(
             selected_descriptors) > 0 and 'all' not in selected_descriptors:  # create descriptor calculator with selected descriptors
         calc = Calculator()

@@ -4,8 +4,8 @@ import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import pandas as pd
 
-from lib.utils.print_functions import ColorPrint
-from lib.global_fun import list_files, get_structvar, replace_alt
+from library.utils.print_functions import ColorPrint
+from library.global_fun import list_files, get_structvar, replace_alt
 
 try:
     from library.features.ligand_descriptors.pmapper_3D_pharmacophore import write_PMAPPER_to_csv, \
@@ -22,7 +22,7 @@ except ImportError:
 from library.features.protein_ligand_complex_descriptors.descriptors_3D import calc_3D_complex_descriptors, \
     calc_3D_ligand_descriptors
 from library.get_top_scored_Glide_complex_names import get_top_scored_Glide_complex_names
-from lib.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
+from library.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
 
 
 def cmdlineparse():

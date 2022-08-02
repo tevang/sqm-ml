@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
-from lib.molfile.mol2_parser import *
-from lib.molfile.sdf_parser import *
+from library.molfile.mol2_parser import *
+from library.molfile.sdf_parser import *
 from library.features.ligand_descriptors.Sconf_descriptors import calc_Sconf_descriptors
 
 

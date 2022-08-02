@@ -2,8 +2,8 @@ from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import minmax_scale, KBinsDiscretizer, StandardScaler
 
 # SCALE FEATURES BY PROTEIN OR SCALE ALL PROTEINS TOGETHER
-from lib.featvec.invariants import Discretize
-from lib.global_fun import save_pickle
+from library.featvec.invariants import Discretize
+from library.global_fun import save_pickle
 
 def _get_all_valid_feature_columns(features_df):
     return [c for c in features_df.columns if "name" not in c and c != "structvar"

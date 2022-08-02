@@ -1,7 +1,7 @@
 import numpy as np
 from rdkit import DataStructs
 
-from lib.utils.print_functions import Debuginfo
+from library.utils.print_functions import Debuginfo
 
 
 def getNumpyArray_list(fplist):

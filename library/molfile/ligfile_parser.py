@@ -5,14 +5,14 @@ import shutil
 from distutils.spawn import find_executable
 
 # import ray
-from lib.utils.print_functions import ProgressBar
+from library.utils.print_functions import ProgressBar
 from ligand_tools.lib.conformer import Conformer
-from lib.molfile.mol2_parser import *
-from lib.molfile.sdf_parser import *
-from lib.molfile.sdf_parser import get_molnames_from_sdf
+from library.molfile.mol2_parser import *
+from library.molfile.sdf_parser import *
+from library.molfile.sdf_parser import get_molnames_from_sdf
 
 try:
-    from lib.modlib.pybel import Outputfile, readfile
+    from library.modlib.pybel import Outputfile, readfile
 except ImportError:
     print("WARNING: openbabel module could not be found!")
 

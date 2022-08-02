@@ -2,8 +2,8 @@ import multiprocessing
 import numpy as np
 from rdkit import Chem
 from mordred import Calculator, descriptors
-from lib.physchem.mordred_descriptors import mordred_dfunc
-from lib.utils.print_functions import ColorPrint
+from library.physchem.mordred_descriptors import mordred_dfunc
+from library.utils.print_functions import ColorPrint
 import pandas as pd
 
 def calculate_physchem_descriptors_from_mols(mols,

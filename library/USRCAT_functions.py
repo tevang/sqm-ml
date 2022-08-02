@@ -11,7 +11,7 @@ from scipy.spatial import distance
 from scoop import shared
 from sklearn.preprocessing import minmax_scale
 
-from lib.molfile.ligfile_parser import write_mols2files, load_structure_file
+from library.molfile.ligfile_parser import write_mols2files, load_structure_file
 from .ConsScoreTK_Statistics import TopDown_Concordance2, Kendalls_tau, Kendalls_W, Create_Curve
 from .utils.print_functions import ColorPrint
 from .featvec.similarity_matrix import calc_Fingeprint_sim_list

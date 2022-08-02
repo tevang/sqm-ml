@@ -1,7 +1,7 @@
 import csv
 import numpy as np
-from lib.featvec.invariants import ints_to_bitvector
-from lib.global_fun import get_basemolname
+from library.featvec.invariants import ints_to_bitvector
+from library.global_fun import get_basemolname
 
 
 def load_featvec_from_csv_using_serialnum(csv_fname, molname_SMILES_conformersMol_mdict, is_serial_num=False):

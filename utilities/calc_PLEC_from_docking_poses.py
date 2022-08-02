@@ -2,9 +2,9 @@
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from rdkit.Chem.rdmolfiles import SDMolSupplier, SDWriter
-from lib.utils.print_functions import ColorPrint
-from lib.global_fun import get_structvar
-from lib.molfile.sdf_parser import extract_selected_props_from_sdf
+from library.utils.print_functions import ColorPrint
+from library.global_fun import get_structvar
+from library.molfile.sdf_parser import extract_selected_props_from_sdf
 
 from library.features.protein_ligand_complex_descriptors.PLEC import calc_PLEC_from_pose_sdf
 

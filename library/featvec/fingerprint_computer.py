@@ -1,6 +1,6 @@
-from lib.ConsScoreTK_Statistics import remove_uniform_columns
-from lib.featvec.variables import fingerprint_functions_dict
-from lib.utils.print_functions import Debuginfo, ColorPrint
+from library.ConsScoreTK_Statistics import remove_uniform_columns
+from library.featvec.variables import fingerprint_functions_dict
+from library.utils.print_functions import Debuginfo, ColorPrint
 
 
 def calculate_fingerprints_from_RDKit_mols(molname_SMILES_conformersMol_mdict,

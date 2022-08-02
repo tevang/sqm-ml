@@ -7,8 +7,8 @@ import numpy as np
 
 
 # TODO: check for new possible metrics at https://scikit-learn.org/stable/modules/generated/sklearn.metrics.pairwise_distances.html
-from lib.utils.print_functions import ColorPrint, Debuginfo
-from lib.featvec.featvec_array_functions import numpy_to_bitvector
+from library.utils.print_functions import ColorPrint, Debuginfo
+from library.featvec.featvec_array_functions import numpy_to_bitvector
 
 """
 Valid values for metric are:

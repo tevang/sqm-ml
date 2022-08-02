@@ -1,7 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem.Lipinski import RotatableBondSmarts, NumRotatableBonds
 
-from lib.molfile.ligfile_parser import load_structure_file
+from library.molfile.ligfile_parser import load_structure_file
 
 
 def find_bond_groups(mol):

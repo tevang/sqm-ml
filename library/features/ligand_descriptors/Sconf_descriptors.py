@@ -1,5 +1,5 @@
 import pandas as pd
-from lib.global_fun import get_structvar
+from library.global_fun import get_structvar
 
 def calc_Sconf_descriptors(energies_csv):
     return pd.read_csv(energies_csv) \

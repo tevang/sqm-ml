@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import zscore
 
-from lib.dataframe_functions import print_whole_df
+from library.dataframe_functions import print_whole_df
 
 
 def is_outlier_MAD(points, thresh=3.5):

@@ -4,7 +4,7 @@ from sklearn.linear_model._logistic import _intercept_dot
 from sklearn.utils.extmath import log_logistic, safe_sparse_dot
 from scipy.special import expit
 import pretty_errors
-from lib.global_fun import save_pickle, load_pickle
+from library.global_fun import save_pickle, load_pickle
 
 
 def _logistic_loss_and_grad(w, X, y, alpha, sample_weight=None):

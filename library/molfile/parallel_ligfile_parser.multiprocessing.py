@@ -1,6 +1,6 @@
 import multiprocessing
-from lib.molfile.sdf_parser import *
-from lib.utils.print_functions import ColorPrint
+from library.molfile.sdf_parser import *
+from library.utils.print_functions import ColorPrint
 
 
 class Parallel_Ligfile_Operations():

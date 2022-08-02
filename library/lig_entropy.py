@@ -1,6 +1,6 @@
 from multiprocessing import cpu_count
-from lib.molfile.ligfile_parser import *
-from lib.utils.print_functions import ColorPrint
+from library.molfile.ligfile_parser import *
+from library.utils.print_functions import ColorPrint
 
 try:
     from rdkit import Chem

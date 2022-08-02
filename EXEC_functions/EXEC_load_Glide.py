@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from lib.utils.print_functions import Debuginfo
+from library.utils.print_functions import Debuginfo
 from EXEC_functions.EXEC_decompose_molnames import EXEC_decompose_molname
 from commons.EXEC_caching import EXEC_caching_decorator
 

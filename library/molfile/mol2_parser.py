@@ -2,7 +2,7 @@ import csv
 import uuid
 
 try:
-    from lib.modlib.pybel import Outputfile, readfile
+    from library.modlib.pybel import Outputfile, readfile
 except ImportError:
     print("WARNING: openbabel module could not be found.")
 
@@ -18,8 +18,8 @@ try:
 except ImportError:
     print("WARNING: parmed module could be found!")
 
-from lib.ConsScoreTK_Statistics import *
-from lib.global_fun import run_commandline
+from library.ConsScoreTK_Statistics import *
+from library.global_fun import run_commandline
 
 
 def mol2_text_iterator(mol2_file, delimiter="@<TRIPOS>MOLECULE", property_name=None,

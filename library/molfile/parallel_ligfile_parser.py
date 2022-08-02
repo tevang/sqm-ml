@@ -1,5 +1,5 @@
-from lib.molfile.ligfile_parser import *
-from lib.molfile.sdf_parser import *
+from library.molfile.ligfile_parser import *
+from library.molfile.sdf_parser import *
 import ray
 
 

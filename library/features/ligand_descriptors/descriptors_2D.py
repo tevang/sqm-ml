@@ -6,10 +6,10 @@ from library.features.ligand_descriptors.bond_types import get_bond_types_count_
 from library.features.ligand_descriptors.deepFl_logP.compute_logP import compute_logP
 from library.features.ligand_descriptors.physchem_descriptors import calculate_physchem_descriptors_from_mols
 from library.features.ligand_descriptors.rotbonds import create_rotbond_featvec_from_mol
-from lib.molfile.ligfile_parser import load_structure_file
+from library.molfile.ligfile_parser import load_structure_file
 import pandas as pd
 
-from lib.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
+from library.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
 
 
 def get_NumRotatableBonds_df(mols):

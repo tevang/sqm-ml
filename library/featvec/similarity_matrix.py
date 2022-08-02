@@ -1,8 +1,8 @@
 import numpy as np
 from rdkit import Chem
 
-from lib.featvec.similarity_functions import calc_Fingerprint_sim, calc_Fingerprint_sim_fromArrays
-from lib.usrcat.toolkits.rd import generate_moments
+from library.featvec.similarity_functions import calc_Fingerprint_sim, calc_Fingerprint_sim_fromArrays
+from library.usrcat.toolkits.rd import generate_moments
 
 
 def create_similarity_matrix(molname_SMILES_conformersMol_mdict, actives_list, featvec_type="Morgan3"):

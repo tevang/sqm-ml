@@ -1,4 +1,4 @@
-from lib.utils.print_functions import ColorPrint
+from library.utils.print_functions import ColorPrint
 
 try:
     import csfpy
@@ -6,7 +6,7 @@ except (ModuleNotFoundError, ImportError):
     ColorPrint("WARNING: module csfpy was not found, therefore CSFPy fingerprints won't be calculated.", "OKRED")
     pass
 
-from lib.featvec.invariants import *
+from library.featvec.invariants import *
 
 def is_same_mol(rdkit_mol, csfpy_mol):
     """

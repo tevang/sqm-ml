@@ -34,7 +34,7 @@ from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.fixes import _joblib_parallel_args
 from sklearn.model_selection import check_cv
 from sklearn.metrics import get_scorer
-from lib.global_fun import save_pickle
+from library.global_fun import save_pickle
 
 
 _LOGISTIC_SOLVER_CONVERGENCE_MSG = (

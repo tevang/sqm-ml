@@ -1,4 +1,4 @@
-from lib.global_fun import *
+from library.global_fun import *
 from collections import defaultdict
 import csv
 import pandas as pd
@@ -8,7 +8,7 @@ try:
 except ImportError:
     print("WARNING: rdkit module could not be found!")
 try:
-    from lib.modlib.pybel import Outputfile, readfile
+    from library.modlib.pybel import Outputfile, readfile
 except ImportError:
     print("WARNING: openbabel module could not be found.")
 

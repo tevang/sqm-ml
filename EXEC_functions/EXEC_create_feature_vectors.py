@@ -2,7 +2,7 @@ import logging
 
 import pandas as pd
 
-from lib.global_fun import get_poseID, get_frameID
+from library.global_fun import get_poseID, get_frameID
 from commons.EXEC_caching import EXEC_caching_decorator
 from library.EXEC_join_functions import EXEC_merge_dataframes_on_columns
 from library.features.ligand_descriptors.pmapper_3D_pharmacophore import load_PMAPPER

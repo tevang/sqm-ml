@@ -2,8 +2,8 @@ import numpy
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem, MACCSkeys
 
-from lib.featvec import distance
-from lib.global_vars import BOOLEAN_FEATVEC_TYPES
+from library.featvec import distance
+from library.global_vars import BOOLEAN_FEATVEC_TYPES
 
 
 def scalar_vector_similarity(v1, v2, sim_type='ratio'):

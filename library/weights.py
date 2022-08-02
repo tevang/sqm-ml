@@ -1,4 +1,4 @@
-from lib.featvec.distance import calc_norm_dist_matrix, ensemble_maxvariance_sim_matrix
+from library.featvec.distance import calc_norm_dist_matrix, ensemble_maxvariance_sim_matrix
 
 def no_weights(features_df, selected_features, xtest_proteins):
     return None

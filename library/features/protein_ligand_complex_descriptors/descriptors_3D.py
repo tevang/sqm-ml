@@ -2,12 +2,12 @@ import os
 
 import pandas as pd
 
-from lib.utils.print_functions import ColorPrint
-from lib.global_fun import replace_alt
-from lib.molfile.ligfile_parser import load_structure_file
+from library.utils.print_functions import ColorPrint
+from library.global_fun import replace_alt
+from library.molfile.ligfile_parser import load_structure_file
 from library.features.ligand_descriptors.rdkit_3D_shape_descriptors import compute_rdkit_3d_shape_descriptors
 from library.features.protein_ligand_complex_descriptors.interface_surfaces import get_interface_surfaces_from_pdb
-from lib.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
+from library.multithreading.parallel_processing_tools import apply_function_to_list_of_args_and_concat_resulting_dfs
 
 
 def calc_3D_ligand_descriptors(multimol_sdf):

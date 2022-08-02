@@ -4,8 +4,8 @@ from operator import itemgetter
 import pandas as pd
 import logging
 
-from lib.dataframe_functions import remove_uniform_columns_from_dataframe
-from lib.global_fun import list_files, save_pickle
+from library.dataframe_functions import remove_uniform_columns_from_dataframe
+from library.global_fun import list_files, save_pickle
 from commons.EXEC_caching import EXEC_caching_decorator
 from scipy.stats import zscore
 

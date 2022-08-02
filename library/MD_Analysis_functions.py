@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 from operator import itemgetter
-from lib.global_fun import *
+from library.global_fun import *
 
-from lib.utils.print_functions import ColorPrint, Debuginfo
+from library.utils.print_functions import ColorPrint, Debuginfo
 
 try:    # Necessary only to run MD
     import pytraj as pt

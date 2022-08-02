@@ -1,4 +1,4 @@
-from lib.global_fun import save_pickle
+from library.global_fun import save_pickle
 
 
 def calc_overall_DeltaH(protein,

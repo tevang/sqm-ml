@@ -4,8 +4,8 @@ import numpy as np
 import oddt
 from oddt.fingerprints import PLEC
 
-from lib.utils.print_functions import ColorPrint
-from lib.global_fun import replace_alt, get_poseID, get_frameID, get_structvar, list_files, save_pickle
+from library.utils.print_functions import ColorPrint
+from library.global_fun import replace_alt, get_poseID, get_frameID, get_structvar, list_files, save_pickle
 
 oddt.toolkit = oddt.toolkits.rdk # force ODDT to use RDKit
 import pandas as pd

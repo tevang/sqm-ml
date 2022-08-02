@@ -1,6 +1,6 @@
 from rdkit.Chem import GetPeriodicTable
-from lib.chemlib.macrocycle import *
-from lib.utils.print_functions import ColorPrint
+from library.chemlib.macrocycle import *
+from library.utils.print_functions import ColorPrint
 
 
 def get_all_property_vals(propname, *molname_SMILES_conf_mdicts):

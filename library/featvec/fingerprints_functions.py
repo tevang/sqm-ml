@@ -3,12 +3,12 @@ from rdkit import Chem
 from rdkit.Avalon.pyAvalonTools import GetAvalonFP
 from rdkit.Chem import rdReducedGraphs, AllChem, MACCSkeys
 
-from lib.USRCAT_functions import fp_generator_2Dpp, fp_generator_3Dpp, Mol2Vec
-from lib.featvec.csfp import create_CSFP_type_fingeprint, generateAtomInvariant
-from lib.featvec.feature_scale_utils import minmax_scale_crossval_xtest
-from lib.featvec.featvec_array_functions import getNumpyArray
-from lib.featvec.physchem import calculate_physchem_descriptors_from_mols
-from lib.utils.print_functions import ColorPrint
+from library.USRCAT_functions import fp_generator_2Dpp, fp_generator_3Dpp, Mol2Vec
+from library.featvec.csfp import create_CSFP_type_fingeprint, generateAtomInvariant
+from library.featvec.feature_scale_utils import minmax_scale_crossval_xtest
+from library.featvec.featvec_array_functions import getNumpyArray
+from library.featvec.physchem import calculate_physchem_descriptors_from_mols
+from library.utils.print_functions import ColorPrint
 
 try:
     import tmap as tm
