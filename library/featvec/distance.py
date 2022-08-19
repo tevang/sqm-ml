@@ -70,37 +70,6 @@ def calc_norm_dist_matrix(mat1, mat2, disttype):
     return ndistmat
 
 
-def remove_lowzscore_features(*importance_vecs, **vars):
-    """
-    Method that takes an arbitrary number of importance vectors, converts them to z-scores, keep at each feature the
-    highest z-score importance, and removes from the feature vector list the features that have z-score below the
-    given zi_cutoff.
-    :param importance_vecs:
-    :param X:   matrix or list of feature vectors. It can be None if also zi_cutoff is None.
-    :param zi_cutoff:   if None, no features will be removed
-    :return X:  the matrix of feature vectors without the low importance features
-    """
-
-    X, zi_cutoff, is_zscore_sum, get_importances = \
-        vars['X'], vars['zi_cutoff'], vars['is_zscore_sum'], vars['get_importances']
-    imp_matrix = np.array([zscore(vec) for vec in importance_vecs])
-    if is_zscore_sum:
-        importances = np.max(imp_matrix, axis=0)    # z-score of their max z-score
-    else:
-        importances = np.sum(imp_matrix, axis=0)    # sum of their z-scores
-
-    if zi_cutoff != None:
-        indices = [i for i, zi in enumerate(importances) if zi > zi_cutoff]  # indices to keep
-        X = np.array([x[indices] for x in X])
-        ColorPrint("Dimensions of compound set after low-importance columns removal: %i compounds %i features." %
-                   (X.shape[0], X.shape[1]), "BOLDGREEN")
-
-    if get_importances:
-        return X, importances
-    else:
-        return X
-
-
 def ensemble_maxvariance_sim_matrix(mat1, mat2, is_distance=False, percent_unique_values_threshold=50.0):
     """
     Method that takes two 2D matrices, calculates multiple types of pairwise scalar vector distances,
@@ -173,23 +142,4 @@ def ensemble_maxvariance_sim_matrix(mat1, mat2, is_distance=False, percent_uniqu
     scaled_distmat = scaled_distmat.reshape(matrix_shape)  # recover the distance matrix with scaled values
 
     return scaled_distmat
-
-
-def ensemble_min_vec_dist(vec1, vec2):
-    """
-    Method that calculates multiple types of scalar vector distances between the two given vectors, converts them to
-    -1*z-scores, and returns the lowest z-score (distance).
-    :return:
-    """
-    pass
-
-
-def ensemble_mean_vec_dist(vec1, vec2):
-    """
-    Method that calculates multiple types of scalar vector distances between the two given vectors, converts them to
-    -1*z-scores, and returns the average z-score.
-
-    :return:
-    """
-    pass
 

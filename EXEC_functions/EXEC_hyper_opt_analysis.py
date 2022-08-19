@@ -45,9 +45,6 @@ def EXEC_report_hyper_results(hyper_dir=".",
     """
     :param sort_by: 'global_rank' or 'within_protein_rank'
     """
-
-    save_pickle('input.pkl', hyper_dir, out_csv, VARIABLE_HYPER_PARAMETERS, DROP_COLUMNS, sort_by)
-
     def _read_hyper_opt_csv_files():
         df_list = []
         for csv in list_files(hyper_dir, pattern=".*hyper_opt_df.csv.gz"):

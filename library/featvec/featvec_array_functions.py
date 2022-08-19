@@ -3,16 +3,6 @@ from rdkit import DataStructs
 
 from library.utils.print_functions import Debuginfo
 
-
-def getNumpyArray_list(fplist):
-    nplist = []
-    for fp in fplist:
-        arr = np.zeros((1,), np.float32)
-        DataStructs.ConvertToNumpyArray(fp, arr)
-        nplist.append(arr)
-    return nplist
-
-
 def getNumpyArray(fp):
     arr = np.zeros((1,), np.float32)
     DataStructs.ConvertToNumpyArray(fp, arr)

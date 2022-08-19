@@ -8,7 +8,7 @@ import pandas as pd
 from EXEC_functions.EXEC_keep_best_Glide_score_per_basemolname import EXEC_keep_best_Glide_score_per_basemolname
 from EXEC_functions.EXEC_prepare_all_features import EXEC_prepare_all_features
 from EXEC_functions.EXEC_remove_uniform_features import EXEC_remove_uniform_features
-from EXEC_functions import sanity_checks
+from EXEC_functions.EXEC_sanity_checks import sanity_checks
 from EXEC_functions.EXEC_scale_features import EXEC_scale_features
 from EXEC_functions.EXEC_create_feature_vectors import EXEC_create_feature_vectors
 from EXEC_functions.cross_validation.leave_one_out import EXEC_crossval_leave_one_out
@@ -94,7 +94,6 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
         settings.ALL_PROTEINS = sorted(CROSSVAL_PROTEINS + XTEST_PROTEINS)
 
         # TRAIN AND OPTIMIZE LEARNING MODEL ON CROSSVAL PROTEINS SET AND EVALUATE ON XTEST PROTEINS
-        # EXEC_train_Glide_scoring_terms(CROSSVAL_PROTEINS, XTEST_PROTEINS, Settings=settings)
         features_df = EXEC_create_feature_vectors(CROSSVAL_PROTEINS, XTEST_PROTEINS, Settings=settings)
 
         # TODO added to extract PLEC features, maybe there is a more elegant way

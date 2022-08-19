@@ -2,32 +2,6 @@ import numpy as np
 from rdkit import Chem
 
 from library.featvec.similarity_functions import calc_Fingerprint_sim, calc_Fingerprint_sim_fromArrays
-from library.usrcat.toolkits.rd import generate_moments
-
-
-def create_similarity_matrix(molname_SMILES_conformersMol_mdict, actives_list, featvec_type="Morgan3"):
-    
-    actives_list = [m.lower() for m in actives_list]  # lower case
-    similarity_matrix = np.zeros([len(actives_list), len(actives_list)])
-    for ind1,molname1 in enumerate(actives_list):
-        for ind2, molname2 in enumerate(actives_list):
-            if type(molname_SMILES_conformersMol_mdict[molname1]) == np.ndarray: # if this is a molname->fingeprint(array dict
-                # print("DEBUG: fp1=", molname_SMILES_conformersMol_mdict[molname1].tolist()))
-                # print("DEBUG: fp2=", molname_SMILES_conformersMol_mdict[molname1].tolist()))
-                sim = calc_Fingerprint_sim_fromArrays(molname_SMILES_conformersMol_mdict[molname1],
-                                                      molname_SMILES_conformersMol_mdict[molname2])
-                similarity_matrix[ind1, ind2] = sim
-            else:
-                similarity_list = [] # list of fp similarity between all the isomers of molnames1 with all the isomers of molname2
-                for SMILES1 in list(molname_SMILES_conformersMol_mdict[molname1].keys()):
-                    for SMILES2 in list(molname_SMILES_conformersMol_mdict[molname2].keys()):
-                        similarity_list.append(
-                            calc_Fingerprint_sim(molname_SMILES_conformersMol_mdict[molname1][SMILES1],
-                                                 molname_SMILES_conformersMol_mdict[molname2][SMILES2],
-                                                 featvec_type=featvec_type))
-                similarity_matrix[ind1, ind2] = np.max(similarity_list)
-    
-    return similarity_matrix
 
 
 def calc_Fingeprint_sim_list(molname_SMILES_conformersMol_mdict, sorted_ligand_experimentalE_dict, query_molname, is_aveof=False,
@@ -43,7 +17,6 @@ def calc_Fingeprint_sim_list(molname_SMILES_conformersMol_mdict, sorted_ligand_e
     if query_molfile:
         qmol=Chem.MolFromMol2File(query_molfile)
         query_molname = qmol.GetProp('_Name')
-        qmoment = generate_moments(qmol, moment_number=moment_number, onlyshape=onlyshape, ensemble_mode=1)
     else:
         if query_molname not in list(molname_SMILES_conformersMol_mdict.keys()):    # if this ligand is not in the sdf file
             print("ERROR: not conformation was found for query_molname", query_molname)

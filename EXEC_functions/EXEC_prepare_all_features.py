@@ -1,3 +1,6 @@
+import logging
+import os
+
 from EXEC_functions.EXEC_add_activities import EXEC_add_activities
 from EXEC_functions.EXEC_compute_DeltaH import EXEC_compute_DeltaH
 from EXEC_functions.EXEC_compute_SQM_energy_fluctuations import EXEC_compute_all_sqm_energy_fluctuations
@@ -12,7 +15,6 @@ from EXEC_functions.EXEC_remove_unscored_structvars import EXEC_remove_underscor
 from EXEC_functions.EXEC_select_top_Glide_poses import EXEC_select_top_Glide_poses
 from commons.EXEC_caching import EXEC_caching_decorator
 from library.EXEC_join_functions import EXEC_inner_merge_dataframes
-from library.EXEC_script_utils import *
 from EXEC_functions.EXEC_best_structvar import EXEC_keep_structvar_with_extreme_col_value
 
 lg = logging.getLogger(__name__)

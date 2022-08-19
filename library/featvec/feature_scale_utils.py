@@ -25,21 +25,3 @@ def minmax_scale_crossval_xtest(crossval_molname_fingerprint_dict, xtest_molname
         return scaled_crossval_molname_fingerprint_dict, scaled_xtest_molname_fingerprint_dict
     else:
         return scaled_crossval_molname_fingerprint_dict
-
-
-def minmax_scale_clusters(molname_fingerprint_dict, cluster_molnames_dict):
-    """
-    Method to scale clusters of feature vectors, e.g. molecules comming from the same assay, or energy-based
-    feature vectors for a specific receptor.
-
-    :param molname_fingerprint_dict:
-    :param cluster_molnames_dict:       clusterID -> [molname1, molname2, ...]
-    :return:
-    """
-    scaled_molname_fingerprint_dict = {}
-    for clustID, molnames in cluster_molnames_dict.items():
-        featvec_list = [molname_fingerprint_dict[m] for m in molnames]
-        minmax_scale(featvec_list)
-        for molname, scaled_featvec in zip(molnames, featvec_list):
-            scaled_molname_fingerprint_dict[molname] = scaled_featvec
-    return scaled_molname_fingerprint_dict

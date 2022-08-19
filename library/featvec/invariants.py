@@ -1,46 +1,6 @@
 from rdkit.Chem import GetPeriodicTable
-from library.chemlib.macrocycle import *
 from library.utils.print_functions import ColorPrint
-
-
-def get_all_property_vals(propname, *molname_SMILES_conf_mdicts):
-    values = []
-    for molname_SMILES_conf_mdict in molname_SMILES_conf_mdicts:
-        for molname in molname_SMILES_conf_mdict.keys():
-            for mol in molname_SMILES_conf_mdict[molname].values():
-                if propname not in mol.GetPropNames():
-                    ColorPrint("WARNING: molecule %s does not have property %s!" % (molname, propname),
-                               "WARNING")
-                    continue
-                values.extend( get_mol_property_vals(mol, propname) )
-    return np.array(values)
-
-def is_mol_property_discretizable(mol, propname):
-    if propname not in mol.GetPropNames():
-        return False
-    # If an atomic property
-    if ',' in mol.GetProp(propname):
-        for v in mol.GetProp(propname).split(','):
-            if v in ['true', 'True', 'false', 'False']:
-                continue
-            try:
-                float(v)
-            except ValueError:
-                return False
-
-        return True
-    else:   # If a molecular property
-        if mol.GetProp(propname) in ['true', 'True', 'false', 'False']:
-            return True
-        try:
-            float(mol.GetProp(propname))
-        except ValueError:
-            return False
-
-        return True
-
-def is_atomic_property(mol, propname):
-    return ',' in mol.GetProp(propname)
+import numpy as np
 
 def get_mol_property_vals(mol, propname):
     """
@@ -192,28 +152,6 @@ def generateAtomInvariant(mol):
         invariants[i]=hash(tuple(descriptors))& 0xffffffff
     return invariants
 
-def generate_ECFP_Atom_Invariant(mol):
-    """
-    Method to generate the default ECFP atom invariants for validation.
-    :param mol:
-    :return:
-    """
-    pt = GetPeriodicTable()
-    num_atoms = mol.GetNumAtoms()
-    invariants = [0]*num_atoms
-    ring_info = mol.GetRingInfo()
-    for i,a in enumerate(mol.GetAtoms()):
-        descriptors=[]
-        descriptors.append(a.GetAtomicNum())
-        descriptors.append(a.GetTotalDegree())
-        descriptors.append(a.GetTotalNumHs())
-        descriptors.append(a.GetFormalCharge())
-        descriptors.append(a.GetMass() - pt.GetAtomicWeight(a.GetSymbol()))
-        if(ring_info.NumAtomRings(i)):
-            descriptors.append(1)
-        invariants[i]=hash(tuple(descriptors))& 0xffffffff
-    return invariants
-
 def generate_CSFP_Atom_Invariant(mol):
     """
     Method to generate the extra atom invariants for the *CSFP class of fingerprints.
@@ -252,46 +190,6 @@ def generate_CSFP_Atom_Invariant(mol):
 
         invariants[i] = descriptors
     return invariants
-
-def discretize_atomic_properties(*molname_SMILES_Mol_mdicts):
-    discrete_molname_SMILES_Mol_mdicts = [None] * len(molname_SMILES_Mol_mdicts)
-    # STEP1: retrieve all charges and discretize them
-    sample_molname = list(molname_SMILES_Mol_mdicts[0].keys())[0]
-    sample_mol = list(molname_SMILES_Mol_mdicts[0][sample_molname].values())[0]
-    for propname in sample_mol.GetPropNames():
-        if propname.startswith('discrete') or not is_mol_property_discretizable(sample_mol, propname):
-            continue
-        ColorPrint("Discretizing continuous property *** %s ***" % propname, "OKBLUE")
-        property_values = get_all_property_vals(propname, *molname_SMILES_Mol_mdicts)
-        discrete = Discretize()
-        if '_confS_' in propname:   # use preset bind_width for conformational Entropy
-            discrete.fit(property_values, bin_width=1.0, center_to=0)
-        else:
-            discrete.fit(property_values)
-        # STEP2: add the discretized property to every molecule
-        for i, molname_SMILES_mol_mdict in enumerate(molname_SMILES_Mol_mdicts):
-            for molname in molname_SMILES_mol_mdict.keys():
-                for SMILES in molname_SMILES_mol_mdict[molname].keys():
-                    if is_mol_property_discretizable(molname_SMILES_mol_mdict[molname][SMILES], propname):
-                        updated_mol = \
-                            discrete.transform_mol(molname_SMILES_mol_mdict[molname][SMILES], propname)
-                        molname_SMILES_mol_mdict[molname][SMILES] = updated_mol
-            discrete_molname_SMILES_Mol_mdicts[i] = molname_SMILES_mol_mdict
-    return discrete_molname_SMILES_Mol_mdicts
-
-def discretize_ranks(X):
-    """
-    This method is useful when you have a score that has high density regions which are miss-interpreted by
-    the conventional ranking method, which lead to spurious results if you sum the ranks of multiple alternative
-    scores. It instead bins the values and returns their reversed bin assignment.
-    The only difference with ranking is that the values are binned and the bin assignments are reversed, so
-    that higher scores samples to have lower bin assignment==>higher rank.
-
-    :param x:
-    :return:
-    """
-    discretize = Discretize()
-    return discretize.fit_transform(X=-1*X)    # -1x to reverse the bin assignment in order to be like ranking
 
 def int_to_bitstring(x, n=0):
     """

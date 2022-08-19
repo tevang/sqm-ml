@@ -3,7 +3,6 @@ import multiprocessing
 import numpy as np
 from rdkit import Chem
 
-from library.molfile.ligfile_parser import load_structure_file
 from library.utils.print_functions import ColorPrint
 
 
@@ -62,38 +61,3 @@ def calculate_physchem_descriptors_from_mols(mols,
         descriptor_names = [n.to_json()['name'] for n in results.keys()]  # TODO: remove redundancy!
         returned_values.append(descriptor_names)
     return returned_values
-
-
-def calc_physchem_descriptors_from_structure_file(molfile, structvars=[], selected_descriptors=[],
-                                                  get_as_dict=False):
-    """
-    Method to load molecules from a structure files, calculate the selected physchem descriptors of the given
-    structural variants, and return them in a fector form.
-
-    :param molfile:
-    :param structvars:
-    :param selected_descriptors:
-    :return:
-    """
-    molname_SMI_conf_mdict = load_structure_file(molfile, keep_structvar=True, get_SMILES=False, addHs=True)
-    if len(structvars) == 0:
-        structvars = molname_SMI_conf_mdict.keys()
-
-    # First calculate the selected physchem descriptors of both crossval and xtest in one shot
-    mol_args = []
-    for molname, SMILES2mol_dict in list(molname_SMI_conf_mdict.items()):
-        if len(structvars) > 0 and molname in structvars:
-            mol_args.append(SMILES2mol_dict['SMI'])
-        else:
-            ColorPrint("WARNING: molecule %s misses score or bioactivity value!" % molname, "WARNING")
-    featvecs, structvar = calculate_physchem_descriptors_from_mols(mol_args, return_molnames=True,
-                                                                            selected_descriptors=selected_descriptors,
-                                                                            get_logtransform=False)
-    structvar_physchem_dict = {m: vec for m, vec in zip(structvar, featvecs)}
-    physchem_vecs = [structvar_physchem_dict[structvar] for structvar in
-                     structvars]  # in the same order as entropies
-
-    if get_as_dict:
-        return structvar_physchem_dict
-    else:
-        return physchem_vecs

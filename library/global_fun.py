@@ -7,10 +7,8 @@ import os
 import pickle
 import re
 import sys
-import traceback
 from functools import partial
 from subprocess import call
-from decimal import *
 
 import numpy as np
 from scipy.stats import zscore
@@ -26,16 +24,6 @@ class tree(OrderedDict):
         self[key] = type(self)()
         return self[key]
 
-
-class RegexDict(dict):
-    """
-    Dictionary that can be invoked using wildcards in the keys.
-    E.g.
-    dtypes_dict = RegexDict({"mol2vec1000_1": 1000, "mol2vec3000_2": 3000})
-    print(list(dtypes_dict.get_matching("mol2vec.*")))
-    """
-    def get_matching(self, pattern):
-        return (self[key] for key in self if re.match(pattern=pattern,string=key))
 
 def save_pickle(fname, *kargs):
     """
@@ -103,10 +91,6 @@ def flatten(l):
         else:
             yield el
 
-def scale_manually(dataset, Xmin, Xmax):
-
-    scaled_dataset = (np.array(dataset) - Xmin) / float(Xmax - Xmin)
-    return list(scaled_dataset)
 
 def list_files(folder, pattern, full_path=False, rel_path=False):
     """
@@ -136,85 +120,6 @@ def list_files(folder, pattern, full_path=False, rel_path=False):
     else:
         file_list = [os.path.basename(f) for f in file_list]
     return file_list
-
-
-def list_files_recursively(directory: str, pattern: str, full_path=False, rel_path=False) -> list:
-    """
-    Method to list recursively all the files in 'dir' that match the 'pattern'.
-    :param dir: this can take Unix shell regex patterns (e.g. '*/*' but not '.*/.*')
-    :param pattern: this must take a Python regex pattern
-    :param full_path:
-    :param rel_path: get the relative path or just the filename
-    :return:
-    """
-    all_files = []
-    for root, dirs, files in os.walk(directory):
-        all_files += list_files(folder=root, pattern=pattern, full_path=full_path, rel_path=rel_path)
-    return all_files
-
-
-def multimatch_string_list(List, pattern, pindex=1, unique=True):
-    """
-    Method to search for a pattern in every string of a list and return all matches of just one specified subgroup.
-    :param List:
-    :param pattern:
-    :param pindex:
-    :return:
-    """
-    matches = []
-    for l in List:
-        m = re.search(pattern, l)
-        if m:
-            matches.append(m.group(pindex))
-    if unique:
-        return list(set(matches))
-    else:
-        return matches
-
-def match_string_list(List, pattern):
-    """
-    Method to search for a pattern in every string of a list and return all matching subgroups in the 1st line
-    that matches. Useful to scan a file for an occurrence of a string that contains important numbers.
-
-    :param List:    list of strings
-    :param pattern:
-    :return:
-    """
-    matches = []
-    for l in List:
-        m = re.search(pattern, l)
-        if m:
-            return m.groups()
-
-def extract_vars_from_string(string, pattern):
-    """
-    Helper method to extract variables that match a given pattern in a string.
-    :param string:
-    :param pattern:
-    :return:
-    """
-    m = re.search(pattern, string)
-    return m.groups()
-
-def which(program):
-    """
-        FUNCTION to find the full path of the executable 'program'. If it is not found, it returns None.
-    """
-    import os
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, fname = os.path.split(program)
-    if fpath:
-        if is_exe(program):
-            return program
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return exe_file
-
-    return None
 
 
 def write2file(string, fname):
@@ -271,18 +176,6 @@ def run_commandline(commandline, logname="log", append=False, return_out=False, 
             return contents
 
 
-def writelist2log(L, f):
-    """
-        FUNCTION to write a list of strings and numbers in file f as well as print them.
-    """
-    string = str(L[0])
-    for l in L[1:]:
-        string += " " + str(l)
-    print(string)
-    f.write(string + "\n")
-    f.flush
-
-
 def writelist2file(List, file, header=None, append=False):
     """
     Method to write the contents of a list into a file, each element to a different line.
@@ -332,95 +225,6 @@ def writelists2file(fname, *lists):
             f.flush
 
 
-def concatenate_files(filename_list, outfilename, clean=False):
-    with open(outfilename.replace("\\'", "'"), 'w') as outfile:
-        for filename in filename_list:
-            with open(filename.replace("\\'", "'"), 'r') as infile:
-                for line in infile:
-                    outfile.write(line)
-            if clean:
-                os.remove(filename.replace("\\'", "'"))
-
-def print_dict_contents(dictionary):
-    """
-    Print the contents of a dictionary. Can work with multi-dimensional dictionaries, too.
-    :param dictionary: a dict or tree() object
-    :return:
-    """
-    for k,v in list(dictionary.items()):
-        sys.stdout.write(str(k) + " --> ")
-        try:
-            print_dict_contents(v)
-        except AttributeError:
-            print(v)
-
-def write_dict_contents(dictionary, f):
-    """
-    Print the contents of a dictionary. Can work with multi-dimensional dictionaries, too.
-    :param dictionary: a dict or tree() object
-    :return:
-    """
-    for k,v in list(dictionary.items()):
-        f.write(str(k) + " --> ")
-        f.flush()
-        try:
-            write_dict_contents(v, f)
-        except AttributeError:
-            f.write(" ".join([str(e) for e in v]) + "\n")
-            f.flush()
-
-def do_files_exist(files_list=[]):
-    for fname in files_list:
-        if fname and not os.path.exists(fname):
-            raise IOError(ColorPrint("ERROR: file %s does not exist" % fname, "FAIL"))
-
-def core_zscore(values, zmin=-3.0, zmax=3.0):
-    """
-    Calculates the z-score by ignoring the outliers that are zmin stdevs below and zmax stdevs above the mean. At the end all values
-    are converted to z-scores and returned.
-    :param values:
-    :param zmin:
-    :param zmax:
-    :return:
-    """
-
-    zvalues = zscore(values)
-    core_values = [v for z,v, in zip(zvalues, values) if zmin < z < zmax]   # values without outliers
-    core_mean = np.mean(core_values)
-    core_std = float(np.std(core_values))
-    core_zvalues = np.array([(v-core_mean)/core_std for v in values])   # convert all values to zscores
-    return core_zvalues
-
-def multitype_zscore(values, types, ignore_outliers=False):
-    """
-    Given a list of values of mixed type, this method calculates the zscores individually for each type
-    and returnes them in the order they occured in the input list.
-    :param values:
-    :param types:
-    :return:
-    """
-    types_set = set(types)
-    type_values_dict = {t:[] for t in types_set}
-    for v,t in zip(values,types):
-        type_values_dict[t].append(v)
-    if ignore_outliers:
-        type_zscores_dict = {k:core_zscore(v, zmin=-3.0, zmax=3.0) for k,v in list(type_values_dict.items())}
-    else:
-        type_zscores_dict = {k:zscore(v, zmin=-3.0, zmax=3.0) for k,v in list(type_values_dict.items())}
-    zvalues = []
-    type_index_dict = {t:0 for t in types_set}
-    for v,t in zip(values, types):
-        i = type_index_dict[t]
-        zvalues.append(type_zscores_dict[t][i])
-        type_index_dict[t] += 1
-    return zvalues
-
-def replace_multi(text, dict):
-    "Method to do multiple replacements in a string."
-    for i, j in dict.items():
-        text = text.replace(i, j)
-    return text
-
 def replace_alt(text, alt_txtlist, new_txt):
     "Method to do replace multiple alternative texts with one specific text."
     for txt in alt_txtlist:
@@ -431,49 +235,6 @@ def sub_alt(text, alt_patterns, new_txt):
     "Method to do replace multipel alternative texts with one specific text."
     for pattern in alt_patterns:
         text = re.sub(pattern, new_txt, text)
-    return text
-
-def get_relative_path(full_path2file):
-    """
-    The the relative path to the file from your current directory.
-    :param full_path2file:
-    :return:
-    """
-    cwd = os.getcwd()
-    relpath2file = full_path2file.replace(cwd, "")
-    if relpath2file[0] == '/':
-        return relpath2file[1:]
-    else:
-        return relpath2file
-
-def grep(pattern, *filenames):
-    pattern = ".*%s.*" % pattern    # for re.match to work pattern must have trailing '.*'
-    matches = []
-    for fname in filenames:
-        with open(fname, 'r') as f:
-            for line in f:
-                if re.match(pattern, line):
-                    matches.append("%s:%s" % (fname, line))
-    return matches
-
-def is_pattern_in_file(pattern, filename):
-    """
-    Method to tell if a specific keyword pattern is in a file. E.g. "ERROR".
-
-    :param pattern:
-    :param filename:
-    :return:
-    """
-    return len(grep(pattern, filename)) > 0
-
-def add_suffix_to_filename(fname, suffix):
-    s,e = os.path.splitext(fname)
-    return s + suffix + e
-
-def replace_multi(text, dict):
-    "Method to do multiple replacements in a string."
-    for i, j in dict.items():
-        text = text.replace(i, j)
     return text
 
 def replace_alt(text, alt_txtlist, new_txt):
@@ -522,14 +283,6 @@ def get_structvar_suffix(structvar, as_numbers=False):
         else:
             return None
 
-def is_structvar(molname):
-    return re.match(".*_(stereo[0-9]+_ion[0-9]+_tau[0-9]+)[^0-9]*", molname)
-
-def decompose_structvar(structvar):
-    basename = get_basemolname(structvar)
-    m = re.search(".*(stereo[0-9]+)_(ion[0-9]+)_(tau[0-9]+)[^0-9]*", structvar)
-    return basename, m.group(1), m.group(2), m.group(3)
-
 def get_poseID(molname):
     m = re.search(".*_pose([0-9]+)[^0-9]*", molname)
     if m:
@@ -543,24 +296,6 @@ def get_frameID(molname):
         return int(m.group(1))
     else:
         return None
-
-
-def Dec(number, decpoints=3):
-    """
-    Method to create a read fixed decimal point float number. Beware that every time you do operations between 2 such numbers
-    then the decimal points will change (e.g. v1*v2 will have 8 decimal points if v1 & v2 had 4 decimal points).
-    :param number: float, int, Decimal or string
-    :param decpoints:
-    :return:
-    """
-    try:
-        # NOTE: ...if the length of the coefficient after the quantize operation would be greater than precision,
-        # NOTE: then an InvalidOperation is signaled. SOLUTION: increase getcontext().prec
-        return Decimal(number).quantize(Decimal('1.' + '0'*decpoints))
-    except InvalidOperation:
-        Debuginfo("FAIL: number " + str(number) + " %s return decimal.InvalidOperation. "
-                                                    "Try a smaller 'decpoints' input parameters." % type(number),
-                    fail=True)
 
 class GetOutOfLoop( Exception ):
     """
@@ -594,14 +329,3 @@ def get_line_count(filename):
     # bufgen = takewhile(lambda x: x, (f.raw.read(1024*1024) for _ in repeat(None)))    # original line
     bufgen = iter(partial(f.raw.read, 1024 * 1024), b'')
     return sum( buf.count(b'\n') for buf in bufgen )
-
-def exception_traceback(func):
-    def wrap(*args, **kwargs):
-        try:
-            func(*args, **kwargs)
-        except:
-            type, value, tb = sys.exc_info()
-            lines = traceback.format_exception(type, value, tb)
-            print((''.join(lines)))
-            raise
-    return wrap

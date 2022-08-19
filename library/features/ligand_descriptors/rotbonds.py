@@ -61,39 +61,3 @@ def create_rotbond_featvec_from_mol(max_rotbond_count=50, include_numrotbonds=Fa
         return create_rotbond_featvec(find_bond_groups(mol), max_rotbond_count=max_rotbond_count)
 
     return _create_rotbond_featvec_from_mol
-
-
-def create_rotbond_featvec_from_molfile(molfile, max_rotbond_count=50, include_numrotbonds=False):
-    """
-    Helper method to create the contiguous rotbond featvecs from a molfile containing one or more molecules.
-    :param mol:
-    :param max_rotbond_count:
-    :return molname_rotbond_featvec_dict: a dict molname->featvec
-    """
-    molname_SMI_conf_mdict = load_structure_file(molfile, keep_structvar=True, get_SMILES=False, addHs=False)
-    molname_rotbond_featvec_dict = {}
-    for molname in molname_SMI_conf_mdict.keys():
-        mol = molname_SMI_conf_mdict[molname]['SMI']
-        molname_rotbond_featvec_dict[molname] = create_rotbond_featvec(find_bond_groups(mol),
-                                                                       max_rotbond_count=max_rotbond_count)
-        if include_numrotbonds:
-            num_rotbonds = NumRotatableBonds(mol)   # a stricter definition of rotable bonds is used
-                                                    # this excludes amides, esters, etc.
-            molname_rotbond_featvec_dict[molname].insert(0, num_rotbonds)   # append at the beginning the number of rotbonds
-    return molname_rotbond_featvec_dict
-
-
-def get_num_rotbonds_from_molfile(molfile):
-    """
-    Method to computer the number of rotatable bonds for all the molecules within a file using the Strict
-    criteria, which exclude amides, esters, etc.
-    :param molfile:
-    :return molname_num_rotbonds_dict:  dict molname->num_rotbonds
-    """
-    molname_SMI_conf_mdict = load_structure_file(molfile, keep_structvar=True, get_SMILES=False, addHs=False)
-    molname_num_rotbonds_dict = {}
-    for molname in molname_SMI_conf_mdict.keys():
-        mol = molname_SMI_conf_mdict[molname]['SMI']
-        molname_num_rotbonds_dict[molname] = NumRotatableBonds(mol)  # a stricter definition of rotable bonds
-                                                                    # is used this excludes amides, esters, etc.
-    return molname_num_rotbonds_dict
