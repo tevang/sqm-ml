@@ -5,8 +5,6 @@ conda environment installation for linux/ubuntu
 
 for installing CROCpy, follow
 
-https://gitlab.com/ai-ffinity/drug-design/consscortk/-/tree/master/deepscaffopt
-
     cd thirdparty
     tar xfz CROCpy3-1.1.26.tar.gz
     cd CROCpy3-1.1.26
