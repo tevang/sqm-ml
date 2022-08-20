@@ -3,11 +3,6 @@ from rdkit import DataStructs
 
 from library.utils.print_functions import Debuginfo
 
-def getNumpyArray(fp):
-    arr = np.zeros((1,), np.float32)
-    DataStructs.ConvertToNumpyArray(fp, arr)
-    return arr
-
 
 def numpy_to_bitvector(vector):
     """

@@ -121,110 +121,6 @@ def list_files(folder, pattern, full_path=False, rel_path=False):
         file_list = [os.path.basename(f) for f in file_list]
     return file_list
 
-
-def write2file(string, fname):
-    with open(fname, 'w') as f:
-        f.write(string)
-
-
-def run_commandline(commandline, logname="log", append=False, return_out=False, error_keywords=[],
-                    error_messages=[], skip_fail=False, verbose=True):
-    """
-        FUNCTION to run a single command on the UNIX shell. The worker will only receive an index from network.
-    """
-    if append:
-        fout = open(logname, 'a')
-    else:
-        fout = open(logname, 'w')
-    if verbose:
-        print("Running commandline:", commandline)
-    return_code = call(commandline, stdout=fout, stderr=fout, shell=True, executable='/bin/bash')
-
-    if (return_code != 0):
-        print(ColorPrint("ERROR, THE FOLLOWING COMMAND FAILED TO RUN:", "FAIL"))
-        print(commandline)
-        print("return_code=", return_code)
-        fout.close()
-        print("Output:")
-        with open(logname, 'r') as f:
-            contents = f.readlines()
-            for line in contents:
-                print(line)
-        if not skip_fail:
-            raise Exception()
-    fout.close()
-
-    if len(error_keywords) > 0:
-        with open(logname, 'r') as f:
-            contents = f.readlines()
-            for line in contents:
-                for i, word in enumerate(error_keywords):
-                    if word in line:
-                        ColorPrint("ERROR, THE FOLLOWING COMMAND FAILED TO RUN:", "FAIL")
-                        print(commandline)
-                        ColorPrint("COMMAND OUTPUT:", "WARNING")
-                        for line in contents:
-                            print(line)
-                        if len(error_messages) >= i + 1:
-                            raise Exception(error_messages[i])
-                        else:
-                            raise Exception()
-
-    if return_out:
-        with open(logname, 'r') as f:
-            contents = f.readlines()
-            return contents
-
-
-def writelist2file(List, file, header=None, append=False):
-    """
-    Method to write the contents of a list into a file, each element to a different line.
-    :param List:
-    :param file: can be a filename or a file handler
-    :param header:
-    :param append:
-    :return:
-    """
-    if type(file) == str:
-        if append:
-            mode = 'a'
-        else:
-            mode = 'w'
-        f = open(file, mode)
-    else:
-        f = file
-
-    if header:
-        f.write(header+"\n")
-    for l in List:
-        if type(l) == str:
-            if l[-1] != '\n':
-                l += '\n'
-            f.write(l)
-        elif type(l) in [int, float]:
-            f.write(str(l) + "\n")
-        else:
-            l = [str(i) for i in l] # convert all elements to string
-            f.write(" ".join(l) + "\n")
-
-def writelists2file(fname, *lists):
-    """
-        FUNCTION to write the contents of multiple lists of strings and numbers in filename fname.
-        E.g. if l1 = ["a", "b", "c"], l2 = [25.6, 50.5, 100.3], then fname will contain:
-        a 25.6
-        b 50.5
-        c 100.3
-    """
-    N = len(lists[0])  # asume that all lists have the same size
-    with open(fname, 'w') as f:
-        for i in range(N):
-            line = lists[0][i] + " "
-            for l in lists[1:]:
-                line += " " + str(l[i])
-            f.write(line + "\n")
-            f.flush
-
-
 def replace_alt(text, alt_txtlist, new_txt):
     "Method to do replace multiple alternative texts with one specific text."
     for txt in alt_txtlist:
@@ -259,9 +155,6 @@ def get_structvar(molname):
     """
     molname = re.sub("_pose[0-9]+", "", molname)
     return re.sub("_frm[0-9]+", "", molname)
-
-def strip_poseID(structvar):
-    return get_structvar(structvar)
 
 def get_structvar_suffix(structvar, as_numbers=False):
     """

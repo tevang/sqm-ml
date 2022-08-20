@@ -1,15 +1,11 @@
 """
-Methods for both sdf and mol2 file manipulations.
+Methods for both sdf and mol2 file manipulation.
 """
-import shutil
-from distutils.spawn import find_executable
 
-# import ray
-from library.utils.print_functions import ProgressBar
-from ligand_tools.lib.conformer import Conformer
 from library.molfile.mol2_parser import *
 from library.molfile.sdf_parser import *
-from library.molfile.sdf_parser import get_molnames_from_sdf
+# import ray
+from library.utils.print_functions import ProgressBar
 
 try:
     from library.modlib.pybel import Outputfile, readfile
@@ -22,306 +18,6 @@ try:
 except ImportError:
     print("WARNING: rdkit module could not be found!")
 
-
-def mol2ref(ligfile_list, ref_pdb_file=None, onlytau1=False, maxposes=0, only_molnames=False, ignore_refmolname=False):
-    """
-    Method to read a list of .sdf or .mol2 files with aligned compounds and associate the compound names with
-    the reference ligands that were used to align them using the ">  <refligand>" section of the .sdf file.
-
-    :param ligfile_list:
-    :param ref_pdb_file:
-    :param onlytau1:
-    :param maxposes:
-    :param only_molnames:
-    :param ignore_refmolname:
-    :return:
-    """
-    molname2refmolname_dict = {}
-    for ligfile in ligfile_list:
-        ColorPrint("Reading file %s" % ligfile, "BOLDBLUE")
-        full_molname_list = []
-        full_refmolname_list = []    # the reference ligand for alignment in the ">  <refligand>" section, if present in the file
-        # with open(ligfile, 'r') as f:
-        if ligfile.endswith(".sdf"):
-            if ref_pdb_file:
-                full_molname_list, full_refmolname_list = \
-                    get_molnames_from_sdf(ligfile,
-                                          get_refmolnames=True,
-                                          lowercase=True,
-                                          ignore_refmolname=True)
-            else:
-                full_molname_list, full_refmolname_list = \
-                    get_molnames_from_sdf(ligfile,
-                                          get_refmolnames=True,
-                                          lowercase=True,
-                                          ignore_refmolname=ignore_refmolname)
-
-        elif ligfile.endswith(".mol2"):
-            full_molname_list = get_molnames_from_mol2(ligfile, lowercase=True)
-            # TODO: make it read the reference ligand of the alignment from the .mol2
-            full_refmolname_list = full_molname_list
-
-        # extend molname2refmolname_dict
-        molname_list = []
-        for molname, refmolname in zip(full_molname_list, full_refmolname_list):
-            if onlytau1:
-                m = re.match(".*_tau([0-9]+)[^0-9]*", molname)
-                if m and int(m.group(1)) > 1:
-                    continue
-            if maxposes > 0:  # keep up to the maximum number of docking poses
-                m = re.match(".*_pose([0-9]+)[^0-9]*", molname)
-                if m and int(m.group(1)) > maxposes:
-                    continue
-            molname_list.append(molname)
-            if not only_molnames:
-                molname2refmolname_dict[molname] = refmolname
-
-    if molname2refmolname_dict == {} and ignore_refmolname == False:
-        if ligfile.endswith(".mol2"):   # in case of MOL2 it doesn't apply
-            molname2refmolname_dict = {m: m for m in molname_list}
-        elif ligfile.endswith(".sdf"):
-            ColorPrint("No '>  <refligand>' fields were were found in the sdf file(s). If you have not used HomoLigAlign "
-                       "but docking to create the poses, write 'yes' + Enter to continue.", "BOLDGREEN")
-            answer = input("")
-            if answer.lower() == "yes":
-                molname2refmolname_dict = {m: m for m in molname_list}
-            else:
-                raise Exception(ColorPrint("ERROR: invalid option.", "FAIL"))
-
-    if only_molnames:
-        return molname_list
-    else:
-        return molname2refmolname_dict
-
-
-def slow_split_file(INPUT_FILE,
-                    OUT_FILETYPE="mol2",
-                    SUFFIX="_pose",
-                    FILE_SUFFIX="",
-                    tolower=False,
-                    get_molnames=False,
-                    molnum=1):
-    """
-    USE THIS METHOD IF THE INPUT_FILE IS SMALL AND CONTAINS REPLICATE MOLNAMES NAMES. OTHERWISE< USE fast_split_file().
-
-    Method to split a multi-mol .sdf or .mol2 file into separate files, one for each molecule. Each output file is named
-    according to the molecule name in the original multi-mol file. The output file format can also be controlled, i.e.
-    the user may provide a multi-mol .sdf file and split it to multiple .mol2 files. The output files will be named
-    according to the containing molname.
-
-    COMMENTS ARE ALSO WRITTEN TO THE OUTPUT FILE.
-
-    :param INPUT_FILE:  a sdf or mol2 file with one or more compounds. The file type will be guessed for the extension.
-    :param OUT_FILETYPE:    OBSOLET CAUSE IT NEED BABEL! the output file type. Can be 'mol2', 'sdf', or 'pdb'. (default: 'mol2')
-    :param SUFFIX:
-    :param tolower: convert all filenames to lowercase
-    :param get_molnames:
-    :return:
-    """
-    ColorPrint("Initiating splitting of file %s to several %s files." % (INPUT_FILE, OUT_FILETYPE), "OKBLUE")
-
-    # First get all the molnames from the file
-    ColorPrint("Getting molnames from file %s." % INPUT_FILE, "OKBLUE")
-    molnames_list = []
-    ifbasename, iftype = os.path.splitext(INPUT_FILE)
-    if INPUT_FILE.endswith('.mol2'):
-        molnames_list = get_molnames_in_mol2(INPUT_FILE, lower_case=tolower)
-    elif INPUT_FILE.endswith('.sdf'):
-        molnames_list = get_molnames_in_sdf(INPUT_FILE, lower_case=tolower)
-
-    assert molnum < len(molnames_list), ColorPrint("ERROR: -n must be lower than the total number of molecules in"
-        " the file! You gave -n %i but the molecules are %i " % (molnum, len(molnames_list)), "FAIL")
-
-    # Now save each compound separately, if the file contains >1 molecules
-    ColorPrint("Saving the molecules in new files", "OKBLUE")
-    if len(molnames_list) > 1 or INPUT_FILE.endswith(".mol2"):
-        prev_filename = None    # used only when molnum>1
-        molname_count = defaultdict(int)
-        total_mol_num = len(molnames_list)
-        progbar = ProgressBar(100)
-        molindex = 1
-        for mol_list in mol2_list_iterator(INPUT_FILE):
-            molname = mol_list[1].rstrip()
-            if tolower:
-                molname = molname.lower()
-            N = molnames_list.count(molname)    # number of copies of this molecule in the input file
-            if N == 1 and molnum == 1:
-                filename = molname + FILE_SUFFIX + "." + OUT_FILETYPE
-            elif N > 1 and molnum == 1:
-                molname_count[molname] += 1
-                filename = molname + SUFFIX + str(molname_count[molname]) + FILE_SUFFIX + "." + OUT_FILETYPE
-                mol_list[1] = molname + SUFFIX + str(molname_count[molname]) + "\n"
-            elif 1 < molnum < len(molnames_list):
-                start = (molindex//molnum)*molnum
-                end = (1+molindex//molnum)*molnum
-                if end > len(molnames_list):
-                    end = len(molnames_list)
-                fileindex = "_%i-%i" % (start, end)
-                filename = ifbasename + fileindex + FILE_SUFFIX + "." + OUT_FILETYPE
-                if filename != prev_filename:
-                    if prev_filename != None:
-                        output.close()
-                    output = open(filename, 'w')
-                writelist2file(mol_list, file=output, append=True)
-                prev_filename = filename
-                molindex += 1
-                continue
-
-            output = open(filename, "w")  # erase existing file, if any
-            # output.write(mol.write(OUT_FILETYPE))
-            writelist2file(mol_list, file=output, append=True)
-            output.close()
-            progbar.set_progress(molindex/total_mol_num)
-            molindex += 1
-
-        if 1 < molnum < len(molnames_list):
-            output.close()
-
-    else:   # TODO: make this work with SDF files too
-        # ALWAYS USE LOWER CASE LETTERS WHEN DEALING WITH MOLNAMES!
-        shutil.copy2(INPUT_FILE, molnames_list[0].lower() + ".mol2")
-
-    if get_molnames:
-        return [n.lower() for n in molnames_list]
-
-def fast_split_file(INPUT_FILE,
-                    FILE_SUFFIX="",
-                    molnum=1,
-                    use_real_molnames=False):
-    """
-    USE THIS METHOD IF THE INPUT_FILE IS VERY LARGE, molnum IS HIGH AND THE MOLNAMES ARE ALREADY PROOF-READ, REPLICATE ONES WERE
-    RENAMED, etc. For molnum==1, use slow_split_file() instead.
-
-    It simply splits the INPUT_FILE to sub-files containing molnum molecules.
-
-    :param INPUT_FILE:
-    :param molnum:
-    :return:
-    """
-
-    ifbasename, iftype = os.path.splitext(INPUT_FILE)
-    if INPUT_FILE.endswith(".mol2") or INPUT_FILE.endswith(".mol2.gz"):
-        iftype = "mol2"
-        reader_function = mol2_text_iterator
-    elif INPUT_FILE.endswith(".sdf") or INPUT_FILE.endswith(".sdf.gz"):
-        iftype = "sdf"
-        reader_function = sdf_text_iterator
-
-    molindex = 1
-    prev_part = 1
-    prev_molname = ""
-    filename = ifbasename + "_part" + str(prev_part) + FILE_SUFFIX + "." + iftype
-    output = open(filename, 'w')
-    for mol_text, molname in reader_function(INPUT_FILE):
-        part = 1+molindex//molnum -1    # -1 to start writing from *_part1.sdf
-        if part != prev_part:
-            filename = molname + "." + iftype if use_real_molnames else ifbasename + "_part" + str(part) + FILE_SUFFIX + "." + iftype
-            output.close()
-            if use_real_molnames and prev_part == 1:
-                os.rename(ifbasename + "_part1" + FILE_SUFFIX + "." + iftype, prev_molname + "." + iftype)
-            output = open(filename, 'w')
-        output.write(mol_text)
-        prev_part = part
-        prev_molname = molname
-        molindex += 1
-    output.close()
-
-
-def merge_files(OUT_FILE, INPUT_FILES):
-    """
-    Method to merge currently only MOL2 files and alter the _pose[0-9]+ suffices in order not to
-    :param OUT_FILE:
-    :param INPUT_FILES:
-    :return:
-    """
-    ColorPrint("Merging files %s to file %s." % (INPUT_FILES, OUT_FILE), "OKBLUE")
-
-    # First get all the molnames from all files
-    molnames_list = []
-    maxpose_per_structvar_dict = defaultdict(int)
-    of = open(OUT_FILE, 'w')
-    for fname in INPUT_FILES:
-        ColorPrint("Getting molnames from file %s." % fname, "OKBLUE")
-        for mol_list in mol2_list_iterator(fname):
-            molname = mol_list[1].rstrip()
-            structvar = strip_poseID(molname)
-            poseID = get_poseID(molname)
-            # TODO: there are more cases. E.g. max poseID to be 13 and the current 34...
-            if structvar in maxpose_per_structvar_dict.keys() and poseID <= maxpose_per_structvar_dict[structvar]:
-                poseID = maxpose_per_structvar_dict[structvar] + 1
-            maxpose_per_structvar_dict[structvar] = poseID
-            new_molname = structvar + "_pose%i\n" % poseID
-            mol_list[1] = new_molname
-            writelist2file(mol_list, file=OUT_FILE, append=True)
-    # TODO: make this work with SDF files too
-
-def sdf_to_mol2(sdf_file, outfname="", software='unicon', split=False, tolower=False, get_molnames=True):
-    """
-        FUNCTION to convert a multi-mol sdf file to mol2 format.
-    """
-    if get_molnames:
-        contents = open(sdf_file, 'r').readlines()
-        start = 0
-        for i,l in enumerate(contents):
-            if l.startswith("$$$$"):
-                start = i+1
-            else:
-                break
-        open("for_molnames_list.sdf", 'w').writelines(contents[start:])
-        molnames_list = [mymol.title.lower() for mymol in readfile("sdf", "for_molnames_list.sdf")]
-        os.remove("for_molnames_list.sdf")
-
-    if not outfname:
-        # WARNING: this will not work with Unicon if it contains '.' within the basemolname!. Inocon will split the outfname
-        # at the '.' and use only the first substring to name the output file(s). Therefore with software='unicon'
-        # it is recommended to give the full outfile name using outfname arguments but without inner '.'.
-        outfname = os.path.splitext(sdf_file)[0] + ".mol2"
-
-    if software == 'openbabel':
-        largeMOL2file = Outputfile("mol2", outfname, overwrite=True)
-        for mymol in readfile("sdf", sdf_file):
-            largeMOL2file.write(mymol)
-        largeMOL2file.close()
-    elif software == 'unicon':
-        # NOTE: Unicon does not accept input files with only one molecule!
-        contents = open(sdf_file, 'r').readlines()
-        contents.insert(0, "$$$$\n")
-        open(sdf_file, 'w').writelines(contents)
-        unicon_exe = find_executable('Unicon')
-        if unicon_exe:
-            # ATTENTION: NEVER SPLIT WITH Unicon, BECAUSE EACH FILE WILL CONTAIN THE LAST MOLECULE OF THE PREVIOUS FILE
-            # (total 2 molecules if -s1 is used)!
-            run_commandline("%s -i %s --inFormat sdf -o %s --outFormat mol2" % \
-                            (unicon_exe, sdf_file, outfname) )
-            if split:
-                slow_split_file(INPUT_FILE=outfname, OUT_FILETYPE="mol2", tolower=tolower)
-                # NO NEED TO RENAME THE OUTPUT MOL2 FILES!
-                os.remove(outfname) # remove the file that was split.
-        else:
-            raise IOError(ColorPrint("FAIL: Unicon is not in the PATH!", "FAIL"))
-
-    if get_molnames:
-        return molnames_list
-
-def get_molnum_from_file(fname):
-    """
-    Works for both SDF and MOL2 files.
-
-    :param fname:
-    :return:
-    """
-    molnum = 0
-    if fname.endswith(".sdf"):
-        with open(fname, 'r') as f:
-            for line in f:
-                if line[:4] == '$$$$':
-                    molnum += 1
-    elif fname.endswith(".mol2"):
-        with open(fname, 'r') as f:
-            for line in f:
-                if line.startswith("@<TRIPOS>MOLECULE"):
-                    molnum += 1
-    return molnum
 
 def get_molnames_in_sdf(sdf_file, lower_case=False):
 
@@ -340,17 +36,6 @@ def get_molnames_in_sdf(sdf_file, lower_case=False):
         molname_list = [m.lower() for m in molname_list]
 
     return molname_list
-
-
-def get_molnames_in_mol2(mol2_file, lower_case=False):
-    molnames_list = []
-    for mol_list in mol2_list_iterator(mol2_file):
-        molname = mol_list[1].rstrip()
-        if lower_case:
-            molname = molname.lower()
-        molnames_list.append(molname)
-    return molnames_list
-
 
 def load_multiconf_sdf(sdf_file, get_conformers=True, get_molnames=False, get_isomolnames=False, keep_structvar=True,
                        lowestE_structvars=[], get_SMILES=False, save_poseid_as_prop=True, get_serial_num=False,
@@ -519,94 +204,6 @@ def load_multiconf_sdf(sdf_file, get_conformers=True, get_molnames=False, get_is
         return results
 
 
-def write_mol_to_sdf(mol, outfname):
-    """
-    Helper method to write one RDKit Mol object (may be multi-conformer) to an sdf file.
-    :param mol:
-    :param outfname:
-    :return:
-    """
-    writer = Chem.rdmolfiles.SDWriter(outfname)
-    for i in range(mol.GetNumConformers()):
-        writer.write(mol, confId=i)
-    writer.close()
-
-
-def write_mols2files(sdf_file, get_molnames=False):
-    """
-        FUNCTION to read a multi-mol, multi-conformer .sdf file and save each molecule along with its conformers
-        to a separate .sdf file.
-    """
-
-    molname_SMILES_conformersMol_mdict = load_multiconf_sdf(sdf_file, get_conformers=True, get_molnames=False,
-                                                            get_isomolnames=False, keep_structvar=True,
-                                                            get_SMILES=False)
-    for molname in list(molname_SMILES_conformersMol_mdict.keys()):
-        mol = molname_SMILES_conformersMol_mdict[molname]['SMI']
-        write_mol_to_sdf(mol, molname + ".sdf")
-
-    if get_molnames:
-        return list(molname_SMILES_conformersMol_mdict.keys())
-
-
-def load_structures_from_SMILES(SMILES_input, N=0, keep_SMILES=True):
-    """
-    KIND OF OBSOLETE.
-    Method to load SMILES and generate conformers using RDKits code (not recommended).
-    :param SMILES_input:    if a string then the SMILES will be loaded from the respective file. If a dict, then it is assumed that
-                            SMILES_input = molname_SMILES_dict .
-    :param N:   number of conformers to generate. If 0 then no conformer will be generated.
-    :param keep_SMILES: if False, then the SMILES string is replaced by 'SMI'
-    :return:
-    """
-    from scoop import shared, futures
-
-    if N > 0:
-        conf = Conformer()  # this is the ConsScorTK Conformer class
-    if type(SMILES_input) == str:
-        molname_SMILES_dict = {}
-        UKN_molindex = 0  # to enumerate molecules without name
-        with open(SMILES_input, 'r') as f:
-            for line in f:
-                try:
-                    SMILES, molname = [str(w) for w in line.split()[:2]]
-                    if molname in molname_SMILES_dict.keys():   # load only the 1st occurrence of each molname
-                        continue
-                except IndexError:  # assign molname to unnamed mol
-                    UKN_molindex += 1
-                    molname = "unk%i" % UKN_molindex    # in lowercase for compatibility
-                # print("DEBUG: loaded SMILES=%s molname=%s" % (SMILES, molname))
-                molname_SMILES_dict[molname] = SMILES
-    elif type(SMILES_input) == dict:
-        molname_SMILES_dict = SMILES_input
-    molname_SMILES_Mol_dict = tree()
-    molname_SMILES_conformersMol_mdict = tree()
-    for molname,SMILES in list(molname_SMILES_dict.items()):
-        Mol = Chem.MolFromSmiles(SMILES)
-        Mol.SetProp("_Name", molname)
-        Mol.SetProp("SMILES_file", SMILES_input)    # save the source SMILES file path
-        if N >= 3:  # <== CHANGE ME
-            # Hydrogens are added inside conf.gen_singlemol_conf() method
-            Mol = conf.gen_singlemol_conf(Mol, N)
-        elif N == 0:
-            Mol = Chem.AddHs(Mol)
-        if not keep_SMILES:
-            SMILES = 'SMI'
-        molname_SMILES_conformersMol_mdict[molname][SMILES] = Mol   # if 1 <= N <3, Mol will contain not conformer
-
-    if 1 <= N <3:   # PARALLEL CONFORMER GENERATION
-        try:
-            shared.setConst(MOLNAME_SMILES_CONFORMERSMOL_mdict=molname_SMILES_conformersMol_mdict)
-        except TypeError:   # if the shared variable already exists, just pass
-            pass
-        molname_args = list(molname_SMILES_conformersMol_mdict.keys())
-        SMILES_args = [list(molname_SMILES_conformersMol_mdict[molname].keys())[0] for molname in molname_args]
-        # The gen_singlemol_conf_parallel will update molname_SMILES_conformersMol_mdict
-        results = list(futures.map(conf.gen_singlemol_conf_parallel, molname_args, SMILES_args, [1]*len(molname_args)))
-
-    return molname_SMILES_conformersMol_mdict
-
-
 def mol_from_SMILES(SMILES, molname, LIGAND_STRUCTURE_FILE, sanitize, addHs, removeHs, get_SMILES, genNconf=0):
     """
     Convenient method to return the SMILES and a RDKit MOL object.
@@ -638,40 +235,6 @@ def mol_from_SMILES(SMILES, molname, LIGAND_STRUCTURE_FILE, sanitize, addHs, rem
     # WARNING: PROPERTIES ARE NOT MAINTAINED DURING PICKLING OR FUNCTION RETURNING BY DEFAULT.
     # You need the PropertyMol function
     return molname, SMILES, PropertyMol(molH)
-
-# @ray.remote(num_return_vals=3)
-# def _mol_from_SMILES(SMILES, molname, LIGAND_STRUCTURE_FILE, sanitize, addHs, removeHs, get_SMILES, genNconf=0):
-#     """
-#     Same as mol_from_SMILES, but for RAY parallelized execution
-#     :param SMILES:
-#     param molname:  actually it is the structvar
-#     :param sanitize:
-#     :param addHs:
-#     :param removeHs:
-#     :param genNconf:
-#     :return:
-#     """
-#     # print("DEBUG: creating molecule from %s" %SMILES)
-#     mol = Chem.MolFromSmiles(SMILES, sanitize=sanitize)
-#     if mol == None:
-#         ColorPrint("WARNING: skipping invalid SMILES string: %s" % SMILES, "WARNING")
-#         return None, None, None
-#     if addHs == True and removeHs == False:
-#         molH = check_for_all_hydrogens(mol, get_molH=True)
-#     elif removeHs == True:
-#         molH = Chem.RemoveHs(mol)
-#     else:
-#         molH = mol
-#
-#     if genNconf > 0:
-#         Chem.AllChem.EmbedMultipleConfs(molH, numConfs=genNconf, params=Chem.AllChem.ETKDG())
-#     molH.SetProp("_Name", molname)
-#     molH.SetProp("SMILES_file", LIGAND_STRUCTURE_FILE)
-#     if get_SMILES == False:
-#         SMILES = 'SMI'
-#     # WARNING: PROPERTIES ARE NOT MAINTAINED DURING PICKLING OR FUNCTION RETURNING BY DEFAULT.
-#     # You need the PropertyMol function
-#     return molname, SMILES, PropertyMol(molH)
 
 def load_structure_file(LIGAND_STRUCTURE_FILE,
                         keep_structvar=True,
@@ -712,10 +275,6 @@ def load_structure_file(LIGAND_STRUCTURE_FILE,
                                                                 properties_to_store=properties_to_store)
 
     elif LIGAND_STRUCTURE_FILE.endswith(".mol2"): # if an 3D mol2 file convert it to sdf and create moments
-
-        # tmp_folder = "tmp.%s/" % str(uuid.uuid4())
-        # os.mkdir(tmp_folder)
-        # sdf_file = tmp_folder + os.path.basename(LIGAND_STRUCTURE_FILE).replace(".mol2", ".sdf")
         sdf_file = LIGAND_STRUCTURE_FILE.replace(".mol2", ".sdf") # DO NOT DELETE THIS FILE!
         mol2_to_sdf(mol2_file=LIGAND_STRUCTURE_FILE,
                     sdf_file=sdf_file,
@@ -732,19 +291,6 @@ def load_structure_file(LIGAND_STRUCTURE_FILE,
                                      property_name="conf_r_mmod_Potential_Energy-OPLS-2005",
                                      molname_SMILES_conformersMol_mdict=molname_SMILES_conformersMol_mdict)
     elif LIGAND_STRUCTURE_FILE[-4:] in [".smi", ".ism"]: # if a smiles file create conformers
-
-        ## NOTE: PARALLEL EXECUTION WITH RAY DOES NOT WORK FOR >5,000,000 SMILES IN THE FILE. THE PROGRAM
-        ## NOTE: SLOWS DOWN FOR UNEXPLAINED REASON. BETTER RUN THE SERIAL SCRIPT WITH GNU PARALLEL ON MULTIPLE THREADS.
-        # # PARALLEL EXECUTION WITH RAY: GLOBAL VARIABLE DEFINITIONS
-        # ray.init(num_cpus=multiprocessing.cpu_count(), ignore_reinit_error=True, memory=1000000000)
-        # _LIGAND_STRUCTURE_FILE = ray.put(LIGAND_STRUCTURE_FILE)  # FOR RAY: get the RAY object ID to use it as function argument
-        # _sanitize = ray.put(sanitize)
-        # _addHs = ray.put(addHs)
-        # _removeHs = ray.put(removeHs)
-        # _get_SMILES = ray.put(get_SMILES)
-        # _genNconf = ray.put(genNconf)
-        # ray_function_calls = []
-
         # Only for SMILES files (usually very large and slow to be loaded), display a progress bar
         total_lineNum = get_line_count(LIGAND_STRUCTURE_FILE)   # total number of lines in the file
         molname_SMILES_conformersMol_mdict = tree()
@@ -782,25 +328,6 @@ def load_structure_file(LIGAND_STRUCTURE_FILE,
                     continue
 
                 molname_SMILES_conformersMol_mdict[basemolname][SMILES] = molH
-
-                # # PARALLEL EXECUTION WITH RAY
-                # ray_function_calls.append(_mol_from_SMILES.remote(SMILES=SMILES,
-                #                                               molname=structvar,
-                #                                               LIGAND_STRUCTURE_FILE=_LIGAND_STRUCTURE_FILE,
-                #                                               sanitize=_sanitize,
-                #                                               addHs=_addHs,
-                #                                               removeHs=_removeHs,
-                #                                               get_SMILES=_get_SMILES,
-                #                                               genNconf=_genNconf))
-
-        # # PARALLEL EXECUTION WITH RAY
-        # ColorPrint("Creating RDKit MOL objects from SMILES in parallel.", "OKBLUE")
-        # results = ray.get(ray_function_calls)
-        # ColorPrint("Storing RDKit MOL objects into a multidict.", "OKBLUE")
-        # for structvar, SMILES, molH in results:
-        #     basemolname = get_basemolname(structvar) # recover the basemolname
-        #     molname_SMILES_conformersMol_mdict[basemolname][SMILES] = molH
-
     else:
         assert None, ColorPrint("Unknown structure file format. Accepting only files ending in '.sdf', 'mol2', "
                    "'.smi' or '.ism'", "FAIL")
@@ -814,35 +341,6 @@ def load_structure_file(LIGAND_STRUCTURE_FILE,
 
     return molname_SMILES_conformersMol_mdict
 
-def get_SMARTS_from_structure_file(LIGAND_STRUCTURE_FILE,
-                                keep_structvar=True,
-                                get_SMILES=False,
-                                addHs=True,
-                                genNconf=0,
-                                molnames2load=[],
-                                get_properties=set()):
-    """
-    Same as load_structure_file, but instead of RDKit Mol objects, it returns SMARTS strings.
-
-    :param LIGAND_STRUCTURE_FILE:
-    :param keep_structvar:
-    :param get_SMILES:
-    :param addHs:
-    :param genNconf:
-    :param molnames2load:
-    :param get_properties:
-    :return:
-    """
-
-    molname_SMILES_conformersMol_mdict = load_structure_file(LIGAND_STRUCTURE_FILE, keep_structvar, get_SMILES, addHs,
-                                                             genNconf, molnames2load, get_properties)
-    molname_SMILES_SMARTS_mdict = tree()
-    for molname in list(molname_SMILES_conformersMol_mdict.keys()):
-        for SMILES in list(molname_SMILES_conformersMol_mdict[molname].keys()):
-            mol = molname_SMILES_conformersMol_mdict[molname][SMILES]
-            molname_SMILES_SMARTS_mdict[molname][SMILES] = Chem.MolToSmarts(mol, isomericSmiles=True)
-
-    return molname_SMILES_SMARTS_mdict
 
 def add_property_to_mols(property_dict, property_name, molname_SMILES_conformersMol_mdict):
     """
@@ -884,109 +382,3 @@ def check_for_all_hydrogens(mol, get_molH=False):
         return mol
     else:
         return True
-
-def extract_molecules(QUERY_MOLFILE, OUTFILE, MOLNAME_LIST=None, NAME_PATTERN=None, lEstructvar_FE_dict={}):
-    """
-    Method to extract all molecules with names that match the given pattern, or contained in the provided file,
-    and writes them into a new file. It works both with .sdf and .mol2 files.
-    It also works for cases where the MOLNAME_LIST contains the base molnames, e.g LAM00005677 instead of
-    LAM00005677_stereo1_ion1_tau2_pose3.
-
-    :param QUERY_MOLFILE:
-    :param OUTFILE:
-    :param MOLNAME_LIST:    list with basemolnames or structvars to be extracted. In case of basemolnames all the matching
-                            structvars within the file will be extracted
-    :param NAME_PATTERN:
-    :param lEstructvar_FE_dict:   molecular Free Energy of each structural variant (OPTIONAL)
-    :return:
-    """
-
-    if NAME_PATTERN and NAME_PATTERN.lower() != NAME_PATTERN:
-        ColorPrint("WARNING: all molnames are converted to lowercase. However, your -namepattern contains "
-                   "capital letters, which will be converted to lowercase to match with the molnames.",
-                   "WARNING")
-        NAME_PATTERN = NAME_PATTERN.lower()
-
-    # Converl all molenames to lower case
-    molname_list = []
-    if MOLNAME_LIST and type(MOLNAME_LIST) == str:
-        molname_list = [l.split()[0].lower() for l in open(MOLNAME_LIST)]
-    elif MOLNAME_LIST and type(MOLNAME_LIST) == list:
-        molname_list = [l.lower() for l in MOLNAME_LIST]
-
-    if QUERY_MOLFILE.endswith(".sdf"):  # if this is an .sdf file
-        fout = open(OUTFILE, 'w')
-        write = False
-        print("SDF file detected.")
-        with open(QUERY_MOLFILE, 'r') as f:
-            contents = f.readlines()
-            molname = contents[0].strip().lower()
-            basemolname = get_basemolname(molname)
-            if (NAME_PATTERN and re.match(NAME_PATTERN, molname)) \
-                    or molname in molname_list \
-                    or basemolname in molname_list:
-                write = True
-            for i in range(0, len(contents) - 1):
-                if write:
-                    fout.write(contents[i])
-                if re.match("\$\$\$\$", contents[i]):
-                    molname = contents[i + 1].strip().lower()
-                    basemolname = sub_alt(molname, ["_stereo[0-9]+_ion[0-9]+_tau[0-9]+", "_pose[0-9]+", "_frm[0-9]+"], "")
-                    if (NAME_PATTERN and re.match(NAME_PATTERN, molname)) \
-                            or molname in molname_list \
-                            or basemolname in molname_list:
-                        write = True
-                    else:
-                        write = False
-        fout.close()
-
-    if QUERY_MOLFILE.endswith(".mol2"):  # if this is a .mol2 file
-        print("MOL2 file detected.")
-        if os.path.exists(OUTFILE):
-            os.remove(OUTFILE)
-        write = False
-        mol_lines = []  # the lines for a molecular entry in them mol2 file
-        with open(QUERY_MOLFILE, 'r') as f:
-
-            while True:
-                try:
-                    line = f.__next__()
-                    if line.startswith("@<TRIPOS>MOLECULE"):
-                        writelist2file(mol_lines, file=OUTFILE, append=True)  # write the previous molecule
-                        mol_lines = []  # reset mol_lines
-                        next_line = f.__next__()
-                        molname = next_line.strip().lower()
-                        basemolname = get_basemolname(molname)
-                        structvar = get_structvar(molname)
-                        if NAME_PATTERN and re.match(NAME_PATTERN, molname):
-                            mol_lines.append(line)  # initialize mol_lines, clean any previous contents
-                            mol_lines.append(next_line)
-                            write = True
-                            continue    # start saving from the next line, we already saved the header and the molname.
-                        elif NAME_PATTERN and not re.match(NAME_PATTERN, molname):
-                            write = False
-                        elif molname in molname_list \
-                            or basemolname in molname_list \
-                            or structvar in molname_list \
-                            or structvar in lEstructvar_FE_dict.keys():
-                            mol_lines.append(line)  # initialize mol_lines, clean any previous contents
-                            mol_lines.append(next_line)
-                            write = True
-                            continue  # start saving from the next line, we already saved the header and the molname.
-                        else:
-                            write = False
-                    # TODO: currently only if NAME_PATTERN is given, the Energy will be ignored. Complete the other cases, too.
-                    elif not NAME_PATTERN and not MOLNAME_LIST and line.startswith("Energy:"):
-                        ligandE = float(line.split()[1])
-                        structvar = get_structvar(molname)
-                        if structvar in lEstructvar_FE_dict.keys() \
-                                and lEstructvar_FE_dict[structvar] != ligandE:   # if the energies were given
-                            mol_lines = []  # clean the list, this is not the right structure
-                            write = False
-
-                    if write:
-                        mol_lines.append(line)
-                except StopIteration:
-                    break
-        # write the last molecule
-        writelist2file(mol_lines, file=OUTFILE, append=True)
