@@ -14,28 +14,25 @@ import numbers
 import warnings
 
 import numpy as np
+from joblib import Parallel, delayed, effective_n_jobs
 from scipy import optimize, sparse
 from scipy.special import expit, logsumexp
-from joblib import Parallel, delayed, effective_n_jobs
-
 from sklearn.linear_model._base import LinearClassifierMixin, SparseCoefMixin, BaseEstimator
 from sklearn.linear_model._sag import sag_solver
+from sklearn.metrics import get_scorer
+from sklearn.model_selection import check_cv
 from sklearn.preprocessing import LabelEncoder, LabelBinarizer, minmax_scale
 from sklearn.svm._base import _fit_liblinear
 from sklearn.utils import check_array, check_consistent_length, compute_class_weight
 from sklearn.utils import check_random_state
 from sklearn.utils.extmath import (log_logistic, safe_sparse_dot, softmax,
-                             squared_norm)
+                                   squared_norm)
 from sklearn.utils.extmath import row_norms
-from sklearn.utils.optimize import _newton_cg, _check_optimize_result
-from sklearn.utils.validation import check_is_fitted, _check_sample_weight
-from sklearn.utils.validation import _deprecate_positional_args
-from sklearn.utils.multiclass import check_classification_targets
 from sklearn.utils.fixes import _joblib_parallel_args
-from sklearn.model_selection import check_cv
-from sklearn.metrics import get_scorer
-from library.global_fun import save_pickle
-
+from sklearn.utils.multiclass import check_classification_targets
+from sklearn.utils.optimize import _newton_cg, _check_optimize_result
+from sklearn.utils.validation import _deprecate_positional_args
+from sklearn.utils.validation import check_is_fitted, _check_sample_weight
 
 _LOGISTIC_SOLVER_CONVERGENCE_MSG = (
     "Please also refer to the documentation for alternative solver options:\n"

@@ -121,28 +121,6 @@ def gather_all_PLEC_to_one_csv(PLEC_dir, pdb_file_args, out_csv):
     ColorPrint("THE FOLLOWING PLEC FILES WERE EMPTY:", "FAIL")
     print(failed_files)
 
-def gather_all_PMAPPER_to_one_csv(PMAPPER_dir, pdb_file_args, out_csv):
-    print('Gathering all PMAPPER csv.gz files from %s and writing them to %s' % (PMAPPER_dir, out_csv))
-    failed_files = []
-    valid_csv_files = {pdb[0].replace(".pdb", "_PMAPPER.csv.gz") for pdb in pdb_file_args}
-    existing_csv_files = set(list_files(folder=PMAPPER_dir,
-                                        pattern='_PMAPPER.csv.gz',
-                                        full_path=True))
-    csv_files = list(valid_csv_files.intersection(existing_csv_files))
-    with gzip.open(out_csv, 'wt') as f:
-        f.write(','.join(pd.read_csv(csv_files[0]).columns.astype('str')) + '\n')
-        for csv in csv_files:
-            df = pd.read_csv(csv)
-            if df.isnull().any(axis=1).any():
-                failed_files.append(csv)
-                continue
-            f.write(df.to_csv(header=None, index=False))
-            f.flush()
-
-    ColorPrint("THE FOLLOWING PMAPPER FILES WERE EMPTY:", "FAIL")
-    print(failed_files)
-
-
 def load_PLEC(features_df, PROTEINS, Settings):
 
     complex_names = features_df.apply(lambda r: '%s_pose%i_frm%i' %

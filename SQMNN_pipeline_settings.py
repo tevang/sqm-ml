@@ -2,7 +2,7 @@ class Settings:
 
     def __init__(self):
 
-        self.HYPER_SQMNN_ROOT_DIR = '/home/mlovric/data/SQM-ML'
+        self.HYPER_SQMNN_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
         self.HYPER_PROTEIN = 'MK2'
@@ -128,13 +128,7 @@ class Settings:
         self.HYPER_PLEC = True
         self.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF = 20 # 0.2
         self.HYPER_COMPRESS_PLEC = True
-        self.HYPER_COMPRESS_UMP = True
-        # --
-
-        # PMAPPER
-        self.HYPER_PMAPPER = False
-        self.HYPER_PMAPPER_PCA_VARIANCE_EXPLAINED_CUTOFF = 0.25
-        self.HYPER_COMPRESS_PMAPPER = False
+        self.HYPER_COMPRESS_UMP = False
         # --
 
         # *****

@@ -1,9 +1,10 @@
 from sklearn.model_selection import LeaveOneOut
-
+import pandas as pd
 from library.evaluate_model import evaluate_learning_model
 from library.features.dimensionality_reduction.PCA import pca_compress_fingerprint
 from library.features.dimensionality_reduction.UMAP import umap_compress_fingerprint
 from library.features.dimensionality_reduction.feature_selection import best_feature_selector
+from library.train_model import train_learning_model
 from library.weights import compute_activity_ratio_weights, compute_featvec_similarity_weights, \
     compute_maxvariance_featvec_similarity_weights, no_weights
 
@@ -22,8 +23,8 @@ def leave_one_out(ALL_PROTEINS):
 
 def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEINS, XTEST_PROTEINS,
                                 learning_model_type="Logistic Regression", sample_weight_type=None,
-                                compress_PLEC=False, compress_UMP=False, compress_PMAPPER=True,
-                                PLEC_pca_variance_explained_cutoff=0.8, PMAPPER_pca_variance_explained_cutoff=0.8,
+                                compress_PLEC=False, compress_UMP=False,
+                                PLEC_pca_variance_explained_cutoff=0.8,
                                 select_best_features=False, max_best_features=31):
 
     SAMPLE_WEIGHT_FUNCTIONS = {
@@ -53,12 +54,6 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
             mut_features_df = pca_compress_fingerprint(mut_features_df, crossval_proteins, xtest_proteins,
                                                    fingerprint_type='plec',
                                                    pca_variance_explained_cutoff=PLEC_pca_variance_explained_cutoff)
-
-
-        if 'pmap1' in mut_features_df.columns and compress_PMAPPER:
-            mut_features_df = pca_compress_fingerprint(mut_features_df, crossval_proteins, xtest_proteins,
-                                                   fingerprint_type='pmap',
-                                                   pca_variance_explained_cutoff=PMAPPER_pca_variance_explained_cutoff)
 
         print("FEATURES:", selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist())
 

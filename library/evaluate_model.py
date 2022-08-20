@@ -1,8 +1,7 @@
 import logging
 
 import pandas as pd
-from library.ConsScoreTK_Statistics import Create_Curve
-from library.model_evaluation.classification_metrics import Classification_Metric
+from library.model_evaluation.classification_metrics import Classification_Metric, Create_Curve
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import minmax_scale
 

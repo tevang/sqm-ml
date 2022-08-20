@@ -1,7 +1,7 @@
 import pandas as pd
-from umap import UMAP
 
 def umap_compressor(X_train, X_test):
+    import umap.umap_ as UMAP
 
     ncomp = 2
     umap_reducer = UMAP(n_neighbors=15, min_dist=0.1, n_components=ncomp, metric='hamming')
@@ -15,6 +15,8 @@ def umap_compressor(X_train, X_test):
 
 def umap_compress_fingerprint(features_df, crossval_protein, xtest_protein,
                              fingerprint_type='plec'):
+    import umap.umap_ as UMAP
+
     # TODO: UNTESTED!
     print("Reducing %s dimensions with UMAP" % fingerprint_type)
     train_features_df = features_df.loc[features_df["protein"].isin(crossval_protein), :]

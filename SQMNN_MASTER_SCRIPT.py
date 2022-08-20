@@ -14,8 +14,7 @@ from EXEC_functions.EXEC_create_feature_vectors import EXEC_create_feature_vecto
 from EXEC_functions.cross_validation.leave_one_out import EXEC_crossval_leave_one_out
 from SQMNN_pipeline_settings import Settings
 from library.evaluate_model import evaluate_without_learning
-## Parse command line arguments
-from library import extract_nonuniform_columns
+from library.extract_nonuniform_columns import extract_nonuniform_columns
 
 
 def cmdlineparse():
@@ -25,7 +24,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./SQMNN_MASTER_SCRIPT.py -xtp 'MARK4,ACHE,JNK2,AR,EPHB4,MDM2,PARP-1,TP,TPA,SIRT2,SARS-HCoV,PPARG,MK2,A2A,DHFR,GR'
+    ./SQMNN_MASTER_SCRIPT.py -xtp 'ACHE,JNK2,AR,EPHB4,MDM2,PARP-1,TP,TPA,SIRT2,SARS-HCoV,PPARG,MK2,A2A,DHFR,GR'
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
@@ -123,9 +122,7 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     sample_weight_type=settings.SAMPLE_WEIGHTS_TYPE,
                                     compress_PLEC=settings.HYPER_COMPRESS_PLEC,
                                     compress_UMP=settings.HYPER_COMPRESS_UMP,
-                                    compress_PMAPPER=settings.HYPER_COMPRESS_PMAPPER,
-                                    PLEC_pca_variance_explained_cutoff=settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF,
-                                    PMAPPER_pca_variance_explained_cutoff=settings.HYPER_PMAPPER_PCA_VARIANCE_EXPLAINED_CUTOFF)
+                                    PLEC_pca_variance_explained_cutoff=settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF)
 
 if __name__ == "__main__":
 

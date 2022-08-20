@@ -5,7 +5,6 @@ import pandas as pd
 from library.global_fun import get_poseID, get_frameID
 from commons.EXEC_caching import EXEC_caching_decorator
 from library.EXEC_join_functions import EXEC_merge_dataframes_on_columns
-from library.features.ligand_descriptors.pmapper_3D_pharmacophore import load_PMAPPER
 from library.features.protein_ligand_complex_descriptors.PLEC import load_PLEC, load_Glide_PLEC
 from library.net_charges import EXEC_load_all_net_charges
 
@@ -55,10 +54,6 @@ def EXEC_create_feature_vectors(CROSSVAL_PROTEINS, XTEST_PROTEINS, Settings):
 
     elif Settings.HYPER_PLEC:
         features_df = load_Glide_PLEC(features_df, CROSSVAL_PROTEINS + XTEST_PROTEINS, Settings)
-
-    # LOAD PMAPPER FINGERPRINTS
-    if Settings.HYPER_PMAPPER:
-        features_df = load_PMAPPER(features_df, CROSSVAL_PROTEINS + XTEST_PROTEINS, Settings)
 
     # LOAD 3D LIGAND DESCRIPTORS OF LOWEST ENERGY FREE STATE CONFORMERS
     if len(Settings.HYPER_3D_LIGAND_DESCRIPTORS) > 0:

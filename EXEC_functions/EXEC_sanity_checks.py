@@ -37,9 +37,6 @@ def sanity_checks(protein, Settings):
     if Settings.HYPER_PLEC and not Settings.HYPER_SQM_FEATURES:
         fpaths += ["_Glide_PLEC.csv.gz"]
 
-    if Settings.HYPER_PMAPPER:
-        fpaths += ["_PMAPPER.csv.gz"]
-
     for fpath in fpaths:
         fpath = Settings.raw_input_file(fpath, protein)
         assert os.path.exists(fpath), "FAIL: input file %s doesn't exist!" % fpath

@@ -8,12 +8,6 @@ from library.utils.print_functions import ColorPrint
 from library.global_fun import list_files, get_structvar, replace_alt
 
 try:
-    from library.features.ligand_descriptors.pmapper_3D_pharmacophore import write_PMAPPER_to_csv, \
-        gather_all_PMAPPER_to_one_csv
-except ImportError:
-    print("WARNING: PMAPPER module could not be found.")
-
-try:
     from library.features.protein_ligand_complex_descriptors.PLEC import write_PLEC_to_csv, \
         gather_all_PLEC_to_one_csv
 except ImportError:
@@ -79,8 +73,6 @@ python -m scoop -n 16 `which calc_PL_complex_features.py` \\
                         help="Compute only protein-ligand complex descriptors.")
     parser.add_argument("-only_plec", dest="ONLY_PLEC", required=False, action='store_true', default=False,
                         help="Compute only protein-ligand extended connectivity fingerprints.")
-    parser.add_argument("-only_pmapper", dest="ONLY_PMAPPER", required=False, action='store_true', default=False,
-                        help="Compute only PMAPPER 3D pharmacophore fingerprints.")
     parser.add_argument("-glide_csv", dest="GLIDE_CSV", required=False, type=str, default=None,
                         help="A CSV file with Glide properties including 'r_i_docking_score'.")
     parser.add_argument("-glide_deltag", dest="GLIDE_DeltaG", required=False, type=float, default=1.0,
@@ -152,7 +144,7 @@ def launch_pipeline(args):
         elif args.ONLY_COMPLEX_DESCRIPTORS:
             sel_physchem_descriptors, sel_rotbond_descriptors, sel_bond_type_descriptors, sel_Chan_entropy_descriptors, \
             sel_rdkit_3D_ligand_descriptors, sel_logP_descriptors = [[]]*6
-        elif args.ONLY_PLEC or args.ONLY_PMAPPER:
+        elif args.ONLY_PLEC:
             sel_physchem_descriptors, sel_rotbond_descriptors, sel_bond_type_descriptors, sel_Chan_entropy_descriptors, \
             sel_rdkit_3D_ligand_descriptors, sel_logP_descriptors, sel_complex_descriptors = [[]] * 7
         elif args.ONLY_3D_LIGAND_DESCRIPTORS:
@@ -184,7 +176,7 @@ def launch_pipeline(args):
         else:
             descriptors_df = calc_3D_ligand_descriptors(args.LIG_FILE)
 
-    if len(sel_complex_descriptors) > 0 or args.ONLY_PLEC or args.ONLY_PMAPPER:
+    if len(sel_complex_descriptors) > 0 or args.ONLY_PLEC:
         pdb_files = list_files(args.STRUCTURE_DIR, pattern=".*\.pdb", full_path=True)
         if args.GLIDE_CSV:
             valid_complex_names = get_top_scored_Glide_complex_names(args.GLIDE_CSV,
@@ -230,16 +222,6 @@ def launch_pipeline(args):
             write_PLEC_to_csv, args_list=pdb_file_args, number_of_processors=args.CPUs, concat_axis=None)
 
         gather_all_PLEC_to_one_csv(args.STRUCTURE_DIR, pdb_file_args, args.OUT_CSV)
-        return
-
-    if args.ONLY_PMAPPER:
-        # Parallel execution
-        print('Computing PMAPPER vectors of %i complexes in %s and writing them to csv.gz files.' %
-              (len(pdb_file_args), args.STRUCTURE_DIR))
-        apply_function_to_list_of_args_and_concat_resulting_dfs(
-            write_PMAPPER_to_csv, args_list=pdb_file_args, number_of_processors=args.CPUs, concat_axis=None)
-
-        gather_all_PMAPPER_to_one_csv(args.STRUCTURE_DIR, pdb_file_args, args.OUT_CSV)
         return
 
     descriptors_df[['structvar'] + all_sel_descriptor_names].assign(protein=args.RECEPTOR).to_csv(args.OUT_CSV, index=False)
