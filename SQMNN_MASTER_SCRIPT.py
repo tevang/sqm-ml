@@ -2,21 +2,19 @@
 
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from pathlib import Path
-import pretty_errors
 
 import pandas as pd
 
-from sqmnn.EXEC_functions.EXEC_keep_best_Glide_score_per_basemolname import EXEC_keep_best_Glide_score_per_basemolname
-from sqmnn.EXEC_functions.EXEC_prepare_all_features import EXEC_prepare_all_features
-from sqmnn.EXEC_functions.EXEC_remove_uniform_features import EXEC_remove_uniform_features
-from sqmnn.EXEC_functions.EXEC_sanity_checks import sanity_checks
-from sqmnn.EXEC_functions.EXEC_scale_features import EXEC_scale_features
-from sqmnn.EXEC_functions.EXEC_create_feature_vectors import EXEC_create_feature_vectors
-from sqmnn.EXEC_functions.cross_validation.leave_one_out import EXEC_crossval_leave_one_out
-from sqmnn.SQMNN_pipeline_settings import Settings
-from sqmnn.library.evaluate_model import evaluate_without_learning
-## Parse command line arguments
-from sqmnn.library.extract_nonuniform_columns import extract_nonuniform_columns
+from EXEC_functions.EXEC_keep_best_Glide_score_per_basemolname import EXEC_keep_best_Glide_score_per_basemolname
+from EXEC_functions.EXEC_prepare_all_features import EXEC_prepare_all_features
+from EXEC_functions.EXEC_remove_uniform_features import EXEC_remove_uniform_features
+from EXEC_functions.EXEC_sanity_checks import sanity_checks
+from EXEC_functions.EXEC_scale_features import EXEC_scale_features
+from EXEC_functions.EXEC_create_feature_vectors import EXEC_create_feature_vectors
+from EXEC_functions.cross_validation.leave_one_out import EXEC_crossval_leave_one_out
+from SQMNN_pipeline_settings import Settings
+from library.evaluate_model import evaluate_without_learning
+from library.extract_nonuniform_columns import extract_nonuniform_columns
 
 
 def cmdlineparse():
@@ -26,7 +24,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./SQMNN_MASTER_SCRIPT.py -xtp 'MARK4,ACHE,JNK2,AR,EPHB4,MDM2,PARP-1,TP,TPA,SIRT2,SARS-HCoV,PPARG,MK2,A2A,DHFR,GR'
+    ./SQMNN_MASTER_SCRIPT.py -xtp 'ACHE,JNK2,AR,EPHB4,MDM2,PARP-1,TP,TPA,SIRT2,SARS-HCoV,PPARG,MK2,A2A,DHFR,GR'
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
@@ -95,7 +93,6 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
         settings.ALL_PROTEINS = sorted(CROSSVAL_PROTEINS + XTEST_PROTEINS)
 
         # TRAIN AND OPTIMIZE LEARNING MODEL ON CROSSVAL PROTEINS SET AND EVALUATE ON XTEST PROTEINS
-        # EXEC_train_Glide_scoring_terms(CROSSVAL_PROTEINS, XTEST_PROTEINS, Settings=settings)
         features_df = EXEC_create_feature_vectors(CROSSVAL_PROTEINS, XTEST_PROTEINS, Settings=settings)
 
         # TODO added to extract PLEC features, maybe there is a more elegant way
@@ -125,9 +122,7 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     sample_weight_type=settings.SAMPLE_WEIGHTS_TYPE,
                                     compress_PLEC=settings.HYPER_COMPRESS_PLEC,
                                     compress_UMP=settings.HYPER_COMPRESS_UMP,
-                                    compress_PMAPPER=settings.HYPER_COMPRESS_PMAPPER,
-                                    PLEC_pca_variance_explained_cutoff=settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF,
-                                    PMAPPER_pca_variance_explained_cutoff=settings.HYPER_PMAPPER_PCA_VARIANCE_EXPLAINED_CUTOFF)
+                                    PLEC_pca_variance_explained_cutoff=settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF)
 
 if __name__ == "__main__":
 
