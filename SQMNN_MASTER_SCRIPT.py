@@ -24,7 +24,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./SQMNN_MASTER_SCRIPT.py -xtp 'ACHE,JNK2,AR,EPHB4,MDM2,PARP-1,TP,TPA,SIRT2,SARS-HCoV,PPARG,MK2,A2A,DHFR,GR'
+    ./SQMNN_MASTER_SCRIPT.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'    
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
