@@ -1,3 +1,8 @@
+import os.path
+from library.features.dimensionality_reduction.UMAP import *
+import plotly.express as px
+from plotly.graph_objs import *
+
 def _plot_ump(x):
     """
 
@@ -14,7 +19,7 @@ def _plot_ump(x):
     plt.show()
 
 
-def _plot_ump_custom(df):
+def _plot_ump_custom(df, protein):
     import matplotlib.pyplot as plt
     import seaborn as sns
     fig, ax = plt.subplots()
@@ -22,11 +27,17 @@ def _plot_ump_custom(df):
     color_dict = dict({1: 'red', 0: 'grey'})
     sns.scatterplot(data=df, x='ump1', y='ump2',  hue='y', style='y',
                     markers=markers, palette= color_dict)
+    title = f'ump_{protein}'
+    print(protein)
+    print(os.path.abspath('results/'))
+
+    plt.title(title)
+    plt.savefig(f'results/{title}.png')
     plt.show()
     plt.close()
 
 
-def _plot_vae_custom(df):
+def _plot_vae_custom(df, protein):
     import matplotlib.pyplot as plt
     import seaborn as sns
     fig, ax = plt.subplots()
@@ -34,47 +45,51 @@ def _plot_vae_custom(df):
     color_dict = dict({1: 'red', 0: 'grey'})
     sns.scatterplot(data=df, x='vae1', y='vae2', hue='y', style='y',
                     markers=markers, palette=color_dict)
+    title = f'vae_{protein}'
+    plt.title(title)
+
+    plt.savefig(f'results/{title}.png')
     plt.show()
     plt.close()
 
 
-# for plotting true predicted
-# def confusion(collection, t, p):
-#     tp = collection[(collection[t] == 1) & (collection[p] == 1)].index
-#     tn = collection[(collection[t] == 0) & (collection[p] == 0)].index
-#     fp = collection[(collection[t] == 0) & (collection[p] == 1)].index
-#     fn = collection[(collection[t] == 1) & (collection[p] == 0)].index
-#     return tp, tn, fp, fn
-#
-#
-# y_pred = learning_model_functions[learning_model_type].predict(features_df[sel_columns])
-# y_pred = pd.Series(y_pred, index=features_df['is_active'].index)
-# y_true = features_df['is_active']
-# ys = pd.concat([y_true, y_pred], axis=1)
-# ys.columns = ['t', 'p']
-#
-#
-# # tp, tn, fp, fn = confusion(ys, 't','p')
-# def total(r):
-#     if (r['t'] == 1) and (r['p'] == 1):
-#         return 'tp'
-#     elif (r['t'] == 0) and (r['p'] == 0):
-#         return 'tn'
-#     elif (r['t'] == 0) and (r['p'] == 1):
-#         return 'fp'
-#     elif (r['t'] == 1) and (r['p'] == 0):
-#         return 'fn'
-#     else:
-#         return None
-#
-#
-# res = ys.apply(total, axis=1)
-#
-#
-# def _plot_ump(x, color):
-#     import matplotlib.pyplot as plt
-#     color = color.replace({'tp': 'green', 'tn': 'lightblue', 'fn': 'red', 'fp': 'orange'})
-#     plt.scatter(x.ump1, x.ump2, s=8, alpha=.7, c=color)
-#     plt.show()
+def plot_ump_with_label_3d(df, figure_title, execution_dir, label_column):
+    """
 
+    Parameters
+    ----------
+    df: dataframe with features, the df needs a label y
+    figure_title: title of figure
+    execution_dir: folder path, no slash at the end
+    label_column: column in df to label the plot
+
+    Returns
+    -------
+    Shows and saves figure
+
+    """
+
+    ump_df = ump_trans(df.drop(label_column, axis=1), ncomp=3).join(df[label_column]).reset_index(drop=True)
+
+    lmap = {0:'inactive', 1:'active'}
+    cmap = ['red', 'silver']
+    ump_df['color_column'] = ump_df[label_column].map(lmap)
+
+    ump_df['name'] = ump_df.index.to_series()
+
+    fig = px.scatter_3d(ump_df, x='ump1', y='ump2', z='ump3',
+                        color='color_column',
+                        hover_name='name',
+
+                        color_discrete_sequence=cmap,
+                        opacity=.7)
+    fig.update_layout(title=f'UMAP_{figure_title}',
+                      paper_bgcolor='white',
+                      plot_bgcolor='white')
+
+    fig.update_traces(marker=dict(size=3),
+                      line=dict(width=2,
+                                color='DarkSlateGrey'),
+                      selector=dict(mode='markers'))
+    fig.show()
 

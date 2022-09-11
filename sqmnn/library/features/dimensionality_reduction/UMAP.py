@@ -4,7 +4,11 @@ from umap import UMAP
 def umap_compressor(X_train, X_test):
 
     ncomp = 2
+<<<<<<< Updated upstream:sqmnn/library/features/dimensionality_reduction/UMAP.py
     umap_reducer = UMAP(n_neighbors=500, min_dist=0.1, n_components=ncomp, metric='euclidean')
+=======
+    umap_reducer = UMAP(n_neighbors=200, min_dist=0.01, n_components=ncomp, metric='correlation')
+>>>>>>> Stashed changes:library/features/dimensionality_reduction/UMAP.py
     umap_reducer.fit(X_train)
     print('======================', X_train.shape)
     # TODO ump column names
@@ -33,22 +37,37 @@ def umap_compress_fingerprint(features_df, crossval_protein, xtest_protein,
         .pipe(lambda df: df.rename(columns={c: '%s_%s' % (fingerprint_type, c)
                                             for c in df.filter(regex='^ump[0-9]+$').columns}))
 
+<<<<<<< Updated upstream:sqmnn/library/features/dimensionality_reduction/UMAP.py
 
 def _ump_trans(x):
+=======
+def ump_trans(x, ncomp=2):
+>>>>>>> Stashed changes:library/features/dimensionality_reduction/UMAP.py
     """
 
     Parameters
     ----------
     x
+<<<<<<< Updated upstream:sqmnn/library/features/dimensionality_reduction/UMAP.py
+=======
+    ncomp
+>>>>>>> Stashed changes:library/features/dimensionality_reduction/UMAP.py
 
     Returns
     -------
 
     """
+<<<<<<< Updated upstream:sqmnn/library/features/dimensionality_reduction/UMAP.py
     from umap import UMAP
     ncomp = 2
     umap_reducer = UMAP(n_neighbors=15, min_dist=0.1, n_components=ncomp, metric='hamming')
     umap_reducer.fit(x)
     ump_df = pd.DataFrame(umap_reducer.transform(x),
                           columns=['ump%i' % u for u in range(1, ncomp+1)])
+=======
+    umap_reducer = UMAP(n_neighbors=50, min_dist=0.1, n_components=ncomp, metric='correlation')
+    umap_reducer.fit(x)
+    ump_df = pd.DataFrame(umap_reducer.transform(x),
+                          columns=['ump%i' % u for u in range(1, ncomp+1)], index=x.index)
+>>>>>>> Stashed changes:library/features/dimensionality_reduction/UMAP.py
     return ump_df
