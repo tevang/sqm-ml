@@ -2,7 +2,7 @@ class Settings:
 
     def __init__(self):
 
-        self.HYPER_SQMNN_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
+        self.HYPER_SQMNN_ROOT_DIR = '/home2/shared_files/sqm-ml'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
         self.HYPER_PROTEIN = 'MK2'
