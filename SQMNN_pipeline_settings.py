@@ -5,6 +5,7 @@ class Settings:
         self.HYPER_SQMNN_ROOT_DIR = '/home2/shared_files/sqm-ml'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
+        self.HYPER_RESULTS_DIR = '/home/mario/repo/sqm-ml/results'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False

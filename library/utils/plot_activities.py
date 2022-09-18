@@ -1,5 +1,5 @@
 import os.path
-from library.features.dimensionality_reduction.UMAP import *
+from library.features.dimensionality_reduction.UMAP import _ump_trans
 import plotly.express as px
 from plotly.graph_objs import *
 
@@ -69,10 +69,10 @@ def plot_ump_with_label_3d(df, figure_title, execution_dir, label_column):
 
     """
 
-    ump_df = ump_trans(df.drop(label_column, axis=1), ncomp=3).join(df[label_column]).reset_index(drop=True)
+    ump_df = _ump_trans(df.drop(label_column, axis=1), ncomp=3).join(df[label_column]).reset_index(drop=True)
 
     lmap = {0:'inactive', 1:'active'}
-    cmap = ['red', 'silver']
+    cmap = ['red', 'whitesmoke']
     ump_df['color_column'] = ump_df[label_column].map(lmap)
 
     ump_df['name'] = ump_df.index.to_series()
@@ -91,5 +91,54 @@ def plot_ump_with_label_3d(df, figure_title, execution_dir, label_column):
                       line=dict(width=2,
                                 color='DarkSlateGrey'),
                       selector=dict(mode='markers'))
+
+    title = f'UMAP_{figure_title}'
+
+    fig.write_html(os.path.abspath(f'{execution_dir}/{title}.html'))
     fig.show()
 
+
+def plot_ump_with_protein(df, figure_title, execution_dir, label_column, protein_col):
+    """
+
+    Parameters
+    ----------
+    df: dataframe with features, the df needs a label y
+    figure_title: title of figure
+    execution_dir: folder path, no slash at the end
+    label_column: column in df to label the plot
+
+    Returns
+    -------
+    Shows and saves figure
+
+    """
+
+    ump_df = _ump_trans(df.drop([label_column, protein_col],
+                                axis=1), ncomp=3).join(df[[label_column, protein_col]]).reset_index(drop=True)
+
+    lmap = {0:'inactive', 1:'active'}
+    cmap = ['red', 'silver']
+
+    ump_df['color_column'] = ump_df[label_column].map(lmap)
+
+
+    fig = px.scatter_3d(ump_df, x='ump1', y='ump2', z='ump3',
+                        color='color_column',
+                        hover_name=protein_col,
+
+                        color_discrete_sequence=cmap,
+                        opacity=.7)
+    fig.update_layout(title=f'UMAP_{figure_title}',
+                      paper_bgcolor='white',
+                      plot_bgcolor='white')
+
+    fig.update_traces(marker=dict(size=3),
+                      line=dict(width=2,
+                                color='DarkSlateGrey'),
+                      selector=dict(mode='markers'))
+
+    title = f'UMAP_prot_{figure_title}'
+
+    fig.write_html(os.path.abspath(f'{execution_dir}/{title}.html'))
+    fig.show()

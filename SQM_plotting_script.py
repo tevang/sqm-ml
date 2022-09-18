@@ -12,7 +12,6 @@ from EXEC_functions.EXEC_remove_uniform_features import EXEC_remove_uniform_feat
 from EXEC_functions.EXEC_sanity_checks import sanity_checks
 from EXEC_functions.EXEC_scale_features import EXEC_scale_features
 from EXEC_functions.EXEC_create_feature_vectors import EXEC_create_feature_vectors
-from EXEC_functions.cross_validation.leave_one_out import EXEC_crossval_leave_one_out
 from SQMNN_pipeline_settings import Settings
 from library.evaluate_model import evaluate_without_learning
 from library.extract_nonuniform_columns import extract_nonuniform_columns
@@ -28,7 +27,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./SQMNN_MASTER_SCRIPT.py -xtp 'MARK4,ACHE,JNK2,AR,EPHB4,MDM2,PARP-1,TP,TPA,SIRT2,SARS-HCoV,PPARG,MK2,A2A,DHFR,GR'
+    ./SQM_plotting_script.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
