@@ -5,17 +5,17 @@ import pretty_errors
 import pandas as pd
 
 from EXEC_functions.cross_validation.loo_plots import EXEC_crossval_plots
-from SQMNN_pipeline_settings import Settings
+from SQM_ML_pipeline_settings import settings
 
 
 def cmdlineparse():
     parser = ArgumentParser(formatter_class=RawDescriptionHelpFormatter, description="""
 DESCRIPTION:
-    This script calculates 
+    This script plots the 3D UMAP projections of PLEC fingerprints and colors the dots by activity.
                             """,
                             epilog="""
     EXAMPLE:
-    ./SQM_plotting_script.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'
+    ./EXEC_plot.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
@@ -33,20 +33,20 @@ DESCRIPTION:
     return args
 
 def launch_plotting(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_DIR_NAME, FORCE_COMPUTATION,
-                    settings=None):
+                    Settings=None):
 
-    if not settings:
-        settings = Settings()
+    if not Settings:
+        Settings = settings()
 
-    settings.HYPER_EXECUTION_DIR_NAME = EXECUTION_DIR_NAME
+    Settings.HYPER_EXECUTION_DIR_NAME = EXECUTION_DIR_NAME
     CROSSVAL_PROTEINS = [p for p in CROSSVAL_PROTEINS_STRING.split(",") if len(p) > 0]
     XTEST_PROTEINS = [p for p in XTEST_PROTEINS_STRING.split(",") if len(p) > 0]
 
     # Load scaled features and plot
     scaled_features_df = pd.read_csv(os.path.join(
-        Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_EXECUTION_DIR_NAME,
-        "%i_proteins" % len(Settings.ALL_PROTEINS) + "_scaled_nonuniform_all" + Settings.create_feature_csv_name()))
-    EXEC_crossval_plots(scaled_features_df, CROSSVAL_PROTEINS=CROSSVAL_PROTEINS, XTEST_PROTEINS=XTEST_PROTEINS,)
+        Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_EXECUTION_DIR_NAME,
+        "%i_proteins" % len(XTEST_PROTEINS) + "_scaled_nonuniform_all" + Settings.create_feature_csv_name()))
+    EXEC_crossval_plots(scaled_features_df, CROSSVAL_PROTEINS=CROSSVAL_PROTEINS, XTEST_PROTEINS=XTEST_PROTEINS, settings=Settings)
 
 
 if __name__ == "__main__":

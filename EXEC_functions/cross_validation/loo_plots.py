@@ -1,13 +1,9 @@
-import pandas as pd
 from EXEC_functions.cross_validation.leave_one_out import leave_one_out
-from library.utils.plot_activities import plot_ump_with_label_3d, plot_ump_with_protein
-from library.features.dimensionality_reduction.UMAP import _ump_trans
-from SQMNN_pipeline_settings import Settings
+from SQM_ML_pipeline_settings import settings
+from library.utils.plot_activities import plot_ump_with_protein
 
 
-
-def EXEC_crossval_plots(features_df, CROSSVAL_PROTEINS, XTEST_PROTEINS):
-    settings = Settings()
+def EXEC_crossval_plots(features_df, CROSSVAL_PROTEINS, XTEST_PROTEINS, settings):
     for crossval_proteins, xtest_proteins in \
             leave_one_out(XTEST_PROTEINS):
         mut_features_df = features_df.loc[features_df["protein"].isin(crossval_proteins), :].filter(regex='plec')
@@ -27,8 +23,8 @@ def EXEC_crossval_plots(features_df, CROSSVAL_PROTEINS, XTEST_PROTEINS):
         #Option2 plotting with protein cluster
         features_for_umap = mut_features_df.join(features_df[['is_active', 'protein']])
         plot_ump_with_protein(features_for_umap,
-                               xtest_proteins[0]+'_n50_mdist_01_mcorr',
-                               settings.HYPER_RESULTS_DIR,
+                              xtest_proteins[0] +'_n50_mdist_01_mcorr',
+                              settings.HYPER_PLOTS_DIR,
                                'is_active',
                               'protein')
 

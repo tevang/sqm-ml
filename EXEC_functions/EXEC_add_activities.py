@@ -8,7 +8,7 @@ lg = logging.getLogger(__name__)
 def EXEC_add_activities(scores_df, Settings):
 
     return pd.merge(scores_df,
-                    pd.read_csv("%s/%s/%s_activities.txt" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN),
+                    pd.read_csv("%s/%s/%s_activities.txt" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN),
                                 delim_whitespace=True,
                                 comment="#",
                                 names=["basemolname", "is_active"]) \

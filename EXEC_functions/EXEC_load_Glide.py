@@ -12,7 +12,7 @@ lg = logging.getLogger(__name__)
 def EXEC_load_Glide(Settings):
 
     glide_df = EXEC_decompose_molname(pd.read_csv("%s/%s/%s_Glide_properties.csv.gz" % \
-                       (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN)))
+                       (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN)))
 
     invalid_df = glide_df.loc[~glide_df.apply(lambda r: r["basemolname"] in r["molname"], axis=1), :]
     assert invalid_df.size == 0, \

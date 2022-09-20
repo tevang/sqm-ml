@@ -1,11 +1,11 @@
-class Settings:
+class settings:
 
     def __init__(self):
 
-        self.HYPER_SQMNN_ROOT_DIR = '/home2/shared_files/sqm-ml'
+        self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
-        self.HYPER_RESULTS_DIR = '/home/mario/repo/sqm-ml/results'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -140,12 +140,12 @@ class Settings:
     def generated_file(self, file, protein=None):
         if not protein:
             protein = self.HYPER_PROTEIN
-        return self.HYPER_SQMNN_ROOT_DIR + '/' + self.HYPER_EXECUTION_DIR_NAME + '/' + protein + file
+        return self.HYPER_SQM_ML_ROOT_DIR + '/' + self.HYPER_EXECUTION_DIR_NAME + '/' + protein + file
 
     def raw_input_file(self, file, protein=None):
         if not protein:
             protein = self.HYPER_PROTEIN
-        return self.HYPER_SQMNN_ROOT_DIR + '/' + protein + '/' + protein + file
+        return self.HYPER_SQM_ML_ROOT_DIR + '/' + protein + '/' + protein + file
 
     def create_feature_csv_name(self):
         return '_features.SF_%s.SBBSB_%s.SBSPB_%s.HC_%s.FM_%s.RSP_%s.' \

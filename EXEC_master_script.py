@@ -12,7 +12,7 @@ from EXEC_functions.EXEC_sanity_checks import sanity_checks
 from EXEC_functions.EXEC_scale_features import EXEC_scale_features
 from EXEC_functions.EXEC_create_feature_vectors import EXEC_create_feature_vectors
 from EXEC_functions.cross_validation.leave_one_out import EXEC_crossval_leave_one_out
-from SQMNN_pipeline_settings import Settings
+from SQM_ML_pipeline_settings import settings
 from library.evaluate_model import evaluate_without_learning
 from library.extract_nonuniform_columns import extract_nonuniform_columns
 
@@ -24,7 +24,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./SQMNN_MASTER_SCRIPT.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'    
+    ./EXEC_master_script.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'    
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
@@ -45,7 +45,7 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                     settings=None):
 
     if not settings:
-        settings = Settings()
+        settings = settings()
 
     settings.HYPER_FORCE_COMPUTATION = FORCE_COMPUTATION
     settings.HYPER_EXECUTION_DIR_NAME = EXECUTION_DIR_NAME
@@ -53,7 +53,7 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
     XTEST_PROTEINS = [p for p in XTEST_PROTEINS_STRING.split(",") if len(p) > 0]
 
     # CREATE EXECUTION DIR AND SAVE HYPER-PARAMETER VALUES
-    Path(settings.HYPER_SQMNN_ROOT_DIR + "/" + settings.HYPER_EXECUTION_DIR_NAME + "/") \
+    Path(settings.HYPER_SQM_ML_ROOT_DIR + "/" + settings.HYPER_EXECUTION_DIR_NAME + "/") \
         .mkdir(parents=True, exist_ok=True)
     hyper_params = {hp: settings.__getattribute__(hp) for hp in settings.__dir__() if hp.startswith("HYPER")}
     pd.DataFrame([hyper_params]).T.to_csv(settings.generated_file("_parameters.list", "hyper"),

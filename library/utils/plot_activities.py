@@ -113,6 +113,8 @@ def plot_ump_with_protein(df, figure_title, execution_dir, label_column, protein
     Shows and saves figure
 
     """
+    if not os.path.exists(execution_dir):
+        os.mkdir(execution_dir)
 
     ump_df = _ump_trans(df.drop([label_column, protein_col],
                                 axis=1), ncomp=3).join(df[[label_column, protein_col]]).reset_index(drop=True)

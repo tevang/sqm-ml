@@ -28,7 +28,7 @@ def EXEC_caching_decorator(lg, log_text, cache_csv_suffix, **outter_kwargs):
                     if 'prepend_all_proteins' in outter_kwargs.keys() and outter_kwargs['prepend_all_proteins']:
                         # csv_file_basename = "_".join(Settings.ALL_PROTEINS) + csv_file_basename
                         csv_file_basename = "%i_proteins" % len(Settings.ALL_PROTEINS) + csv_file_basename
-                    csv_file = Settings.HYPER_SQMNN_ROOT_DIR + "/" + Settings.HYPER_EXECUTION_DIR_NAME + "/" + csv_file_basename
+                    csv_file = Settings.HYPER_SQM_ML_ROOT_DIR + "/" + Settings.HYPER_EXECUTION_DIR_NAME + "/" + csv_file_basename
                 else:
                     csv_file = Settings.generated_file(cache_csv_suffix)
             else:

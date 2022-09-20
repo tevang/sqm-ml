@@ -9,7 +9,7 @@ lg = logging.getLogger(__name__)
 def EXEC_add_Sconf_to_scores(scores_df, Settings):
 
     Sconf_df = pd.read_csv("%s/%s/%s.schrodinger_confS_rmscutoff%.1f_ecutoff%i.csv.gz" %
-                           (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN, Settings.HYPER_SCONF_RMSD,
+                           (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN, Settings.HYPER_SCONF_RMSD,
                             Settings.HYPER_SCONF_ECUTOFF)) \
         .rename(columns={"molname": "structvar", "schrodinger_confS": "schrodinger_Sconf"}) \
         .astype({"schrodinger_Sconf": float}) \
