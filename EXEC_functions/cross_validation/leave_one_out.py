@@ -22,10 +22,10 @@ def leave_one_out(ALL_PROTEINS):
 
 
 def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEINS, XTEST_PROTEINS,
-                                learning_model_type="Logistic Regression", sample_weight_type=None,
-                                compress_PLEC=False, compress_UMP=False,
-                                PLEC_pca_variance_explained_cutoff=0.8,
-                                select_best_features=False, max_best_features=31):
+                                n_neighbors, min_dist, n_components, metric,
+                                learning_model_type="Logistic Regression", sample_weight_type=None, compress_PCA=False,
+                                compress_UMP=False, PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
+                                max_best_features=31):
 
     SAMPLE_WEIGHT_FUNCTIONS = {
         None: no_weights,
@@ -44,16 +44,14 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
         print("XTEST: %s" % xtest_proteins[0])  # always one protein in the list
         crossval_proteins += CROSSVAL_PROTEINS
 
-        # UMAP part
         if 'plec1' in mut_features_df.columns and compress_UMP:
 
-            mut_features_df = umap_compress_fingerprint(mut_features_df, crossval_proteins, xtest_proteins,
-                                                   fingerprint_type='plec')
+            mut_features_df = umap_compress_fingerprint(mut_features_df, n_neighbors, min_dist, n_components, metric,
+                                                        fingerprint_type='plec')
 
-        if 'plec1' in mut_features_df.columns and compress_PLEC:
-            mut_features_df = pca_compress_fingerprint(mut_features_df, crossval_proteins, xtest_proteins,
-                                                   fingerprint_type='plec',
-                                                   pca_variance_explained_cutoff=PLEC_pca_variance_explained_cutoff)
+        if 'plec1' in mut_features_df.columns and compress_PCA:
+            mut_features_df = pca_compress_fingerprint(mut_features_df, fingerprint_type='plec',
+                                                       pca_variance_explained_cutoff=PLEC_pca_variance_explained_cutoff)
 
         print("FEATURES:", selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist())
 
@@ -77,7 +75,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
             model=model,
             features_df=mut_features_df.loc[mut_features_df["protein"].isin(xtest_proteins), :],
             sel_columns=sel_columns).join(importances_df)
-        )
+                               )
         print("\n")
 
         if select_best_features:

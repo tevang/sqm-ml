@@ -127,9 +127,19 @@ class settings:
 
         # PLEC
         self.HYPER_PLEC = True
-        self.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF = 20 # 0.2
-        self.HYPER_COMPRESS_PLEC = True
-        self.HYPER_COMPRESS_UMP = False
+        # --
+
+        # PCA dimensionality reduction hyper-parameters
+        self.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF = 20  # 0.2
+        self.HYPER_COMPRESS_PLEC_PCA = False
+        # --
+
+        # UMAP dimensionality reduction hyper-parameters
+        self.HYPER_COMPRESS_PLEC_UMAP = True
+        self.N_NEIGHBORS = 50
+        self.MIN_DIST = 0.1
+        self.N_COMPONENTS = 3
+        self.METRIC = 'correlation'
         # --
 
         # *****

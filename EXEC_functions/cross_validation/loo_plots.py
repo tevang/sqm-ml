@@ -23,10 +23,15 @@ def EXEC_crossval_plots(features_df, CROSSVAL_PROTEINS, XTEST_PROTEINS, settings
         #Option2 plotting with protein cluster
         features_for_umap = mut_features_df.join(features_df[['is_active', 'protein']])
         plot_ump_with_protein(features_for_umap,
-                              xtest_proteins[0] +'_n50_mdist_01_mcorr',
-                              settings.HYPER_PLOTS_DIR,
-                               'is_active',
-                              'protein')
+                              figure_title='{}_n{}_mdist{}_m{}'.format(xtest_proteins[0], settings.N_NEIGHBORS,
+                                                                       settings.MIN_DIST, settings.METRIC),
+                              execution_dir=settings.HYPER_PLOTS_DIR,
+                              label_column='is_active',
+                              protein_col='protein',
+                              n_neighbors=settings.N_NEIGHBORS,
+                              min_dist=settings.MIN_DIST,
+                              n_components=settings.N_COMPONENTS,
+                              metric=settings.METRIC)
 
 
 

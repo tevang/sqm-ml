@@ -40,7 +40,7 @@ def _launch_pipeline(**hyper_params):
 
     launch_pipeline(CROSSVAL_PROTEINS_STRING=hyper_params["CROSSVAL_PROTEINS_STRING"],
                     XTEST_PROTEINS_STRING=hyper_params["XTEST_PROTEINS_STRING"],
-                    EXECUTION_DIR_NAME=hyper_params["EXECUTION_DIR_NAME"], FORCE_COMPUTATION=True, settings=settings)
+                    EXECUTION_DIR_NAME=hyper_params["EXECUTION_DIR_NAME"], FORCE_COMPUTATION=True, Settings=settings)
 
     # Clean intermediate files to release disk space
     for fname in list_files(settings.HYPER_SQM_ML_ROOT_DIR + "/" + settings.HYPER_EXECUTION_DIR_NAME,

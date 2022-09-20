@@ -18,7 +18,7 @@ DESCRIPTION:
     ./EXEC_plot.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'
     
     """)
-    parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=False, type=str, default="",
+    parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=True, type=str, default="",
                         help="Protein names of the external test set separated by ','. E.g. -tp 'MARK4,PARP-1,JNK2'")
     parser.add_argument("-cvp", "--crossval-proteins", dest="CROSSVAL_PROTEINS", required=False, type=str, default="",
                         help="Protein names of the cross-validation set (training and validation of SQM-ML)"
@@ -46,7 +46,8 @@ def launch_plotting(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
     scaled_features_df = pd.read_csv(os.path.join(
         Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_EXECUTION_DIR_NAME,
         "%i_proteins" % len(XTEST_PROTEINS) + "_scaled_nonuniform_all" + Settings.create_feature_csv_name()))
-    EXEC_crossval_plots(scaled_features_df, CROSSVAL_PROTEINS=CROSSVAL_PROTEINS, XTEST_PROTEINS=XTEST_PROTEINS, settings=Settings)
+    EXEC_crossval_plots(scaled_features_df, CROSSVAL_PROTEINS=CROSSVAL_PROTEINS, XTEST_PROTEINS=XTEST_PROTEINS,
+                        settings=Settings)
 
 
 if __name__ == "__main__":
