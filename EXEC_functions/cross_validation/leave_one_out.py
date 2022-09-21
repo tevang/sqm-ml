@@ -21,11 +21,11 @@ def leave_one_out(ALL_PROTEINS):
         yield [ALL_PROTEINS[i] for i in train_index], [ALL_PROTEINS[i] for i in test_index]
 
 
-def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEINS, XTEST_PROTEINS,
-                                n_neighbors, min_dist, n_components, metric,
-                                learning_model_type="Logistic Regression", sample_weight_type=None, compress_PCA=False,
-                                compress_UMP=False, PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
-                                max_best_features=31):
+def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEINS, XTEST_PROTEINS, n_neighbors,
+                                min_dist, n_components, metric, learning_model_type="Logistic Regression",
+                                sample_weight_type=None, compress_PCA=False, compress_UMP=False,
+                                PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
+                                max_best_features=31, perm_n_repeats=10):
 
     SAMPLE_WEIGHT_FUNCTIONS = {
         None: no_weights,
@@ -35,7 +35,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
     }
 
     evaluation_dfs = []
-    predictor = train_learning_model(learning_model_type=learning_model_type)
+    predictor = train_learning_model(learning_model_type=learning_model_type, perm_n_repeats=perm_n_repeats)
 
     if 'plec1' in features_df.columns and compress_UMP:
         features_df = umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric,

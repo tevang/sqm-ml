@@ -6,9 +6,10 @@ from sklearn.svm import LinearSVC, SVC, NuSVC
 
 from learning_models.logistic_regression.logistic_regression import LogisticRegressionGroupedSamples
 from library.explainability import _return_perm_imp, _plot_shap
+from library.utils.print_functions import ColorPrint
 
 
-def train_learning_model(learning_model_type):
+def train_learning_model(learning_model_type, perm_n_repeats):
 
     learning_model_functions = {
         'Logistic Regression': LogisticRegression(n_jobs=-1, max_iter=500),
@@ -27,6 +28,7 @@ def train_learning_model(learning_model_type):
     }
 
     def _train_model(features_df, sel_columns, sample_weight=None):
+        ColorPrint("Training {}".format(learning_model_type), 'OKBLUE')
 
         importances_df = pd.DataFrame([])
 
@@ -47,10 +49,9 @@ def train_learning_model(learning_model_type):
                 sel_columns, learning_model_functions[learning_model_type].feature_importances_)})
             print('Feature Importances:', importances_df.iloc[0].sort_values(ascending=False).to_dict())
 
-        # TODO explainability, SHAP works only for trees currently
-        _return_perm_imp(learning_model_functions[learning_model_type], features_df[sel_columns],
-                         features_df['is_active'])
-
+        if perm_n_repeats > 0: _return_perm_imp(learning_model_functions[learning_model_type], features_df[sel_columns],
+                                                features_df['is_active'], n_repeats=perm_n_repeats)
+        # TODO: SHAP works only for trees currently
         _plot_shap(learning_model_functions[learning_model_type], features_df[sel_columns])
 
         return learning_model_functions[learning_model_type], importances_df

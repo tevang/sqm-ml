@@ -112,9 +112,6 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
             nonuniform_features_df, selected_features=nonuniform_features_list, Settings=Settings)
 
         nonuniform_features_list = [i for i in nonuniform_features_list if not i.startswith('plec')]
-        print(scaled_features_df.filter(regex='plec').columns)
-
-        # added UMAP as argument compress_UMP=settings.HYPER_COMPRESS_PLEC_UMAP
         EXEC_crossval_leave_one_out(scaled_features_df, selected_features=nonuniform_features_list,
                                     CROSSVAL_PROTEINS=CROSSVAL_PROTEINS, XTEST_PROTEINS=XTEST_PROTEINS,
                                     n_neighbors=Settings.N_NEIGHBORS, min_dist=Settings.MIN_DIST,
@@ -123,7 +120,8 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     sample_weight_type=Settings.SAMPLE_WEIGHTS_TYPE,
                                     compress_PCA=Settings.HYPER_COMPRESS_PLEC_PCA,
                                     compress_UMP=Settings.HYPER_COMPRESS_PLEC_UMAP,
-                                    PLEC_pca_variance_explained_cutoff=Settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF)
+                                    PLEC_pca_variance_explained_cutoff=Settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF,
+                                    perm_n_repeats=Settings.PERM_N_REPEATS)
 
 if __name__ == "__main__":
 

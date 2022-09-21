@@ -142,6 +142,10 @@ class settings:
         self.METRIC = 'correlation'
         # --
 
+        # Permutation Feature Importances
+        self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
+        # --
+
         # *****
 
     def __setattr__(self, name, value):
