@@ -53,7 +53,7 @@ def _plot_vae_custom(df, protein):
     plt.close()
 
 
-def plot_ump_with_label_3d(df, figure_title, execution_dir, label_column):
+def plot_ump_with_label_3d(ump_df, figure_title, execution_dir, label_column):
     """
 
     Parameters
@@ -71,69 +71,19 @@ def plot_ump_with_label_3d(df, figure_title, execution_dir, label_column):
     if not os.path.exists(execution_dir):
         os.mkdir(execution_dir)
 
-    ump_df = _ump_trans(df.drop(label_column, axis=1), n_components=3) \
-        .join(df[label_column]) \
-        .reset_index(drop=True)
-
-    ump_df['name'] = ump_df.index.to_series()
-
     fig = px.scatter_3d(ump_df.assign(color_column=lambda df: df[label_column].replace(
         {0: 'inactive', 1: 'active'})), x='ump1', y='ump2', z='ump3',
                         color='color_column',
-                        hover_name='molname',
+                        hover_name='basemolname',
                         color_discrete_map={'active': 'red', 'inactive': 'rgb(102,102,102)'},
                         opacity=.7)
     fig.update_layout(title=f'UMAP_{figure_title}',
                       paper_bgcolor='white',
                       plot_bgcolor='white')
-
     fig.update_traces(marker=dict(size=3),
                       line=dict(width=2,
                                 color='DarkSlateGrey'),
                       selector=dict(mode='markers'))
 
     fig.write_html(os.path.abspath(os.path.join(execution_dir, f'UMAP_{figure_title}.html')))
-    fig.show()
-
-
-def plot_ump_with_protein(df, figure_title, execution_dir, label_column, protein_col,
-                          n_neighbors, min_dist, n_components, metric):
-    """
-
-    Parameters
-    ----------
-    df: dataframe with features, the df needs a label y
-    figure_title: title of figure
-    execution_dir: folder path
-    label_column: column in df to label the plot
-
-    Returns
-    -------
-    Shows and saves figure
-
-    """
-    if not os.path.exists(execution_dir):
-        os.mkdir(execution_dir)
-
-    ump_df = _ump_trans(df.drop([label_column, protein_col], axis=1),
-                        n_neighbors=n_neighbors, min_dist=min_dist, n_components=n_components, metric=metric) \
-        .join(df[[label_column, protein_col]]) \
-        .reset_index(drop=True)
-
-    fig = px.scatter_3d(ump_df.assign(color_column=lambda df: df[label_column].replace(
-        {0: 'inactive', 1: 'active'})), x='ump1', y='ump2', z='ump3',
-                        color='color_column',
-                        hover_name=protein_col,
-                        color_discrete_map={'active': 'red', 'inactive': 'rgb(102,102,102)'},
-                        opacity=.7)
-    fig.update_layout(title=f'UMAP_{figure_title}',
-                      paper_bgcolor='white',
-                      plot_bgcolor='white')
-
-    fig.update_traces(marker=dict(size=3),
-                      line=dict(width=2,
-                                color='DarkSlateGrey'),
-                      selector=dict(mode='markers'))
-
-    fig.write_html(os.path.abspath(os.path.join(execution_dir, f'3D_UMAP_{figure_title}.html')))
     fig.show()
