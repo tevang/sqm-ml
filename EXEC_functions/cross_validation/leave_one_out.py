@@ -37,6 +37,14 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
     evaluation_dfs = []
     predictor = train_learning_model(learning_model_type=learning_model_type)
 
+    if 'plec1' in features_df.columns and compress_UMP:
+        features_df = umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric,
+                                                    fingerprint_type='plec')
+
+    if 'plec1' in features_df.columns and compress_PCA:
+        features_df = pca_compress_fingerprint(features_df, fingerprint_type='plec',
+                                                   pca_variance_explained_cutoff=PLEC_pca_variance_explained_cutoff)
+
     for crossval_proteins, xtest_proteins in \
             leave_one_out(XTEST_PROTEINS):
         mut_features_df = features_df.copy()
@@ -44,17 +52,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
         print("XTEST: %s" % xtest_proteins[0])  # always one protein in the list
         crossval_proteins += CROSSVAL_PROTEINS
 
-        if 'plec1' in mut_features_df.columns and compress_UMP:
-
-            mut_features_df = umap_compress_fingerprint(mut_features_df, n_neighbors, min_dist, n_components, metric,
-                                                        fingerprint_type='plec')
-
-        if 'plec1' in mut_features_df.columns and compress_PCA:
-            mut_features_df = pca_compress_fingerprint(mut_features_df, fingerprint_type='plec',
-                                                       pca_variance_explained_cutoff=PLEC_pca_variance_explained_cutoff)
-
         print("FEATURES:", selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist())
-
 
         model, importances_df = predictor(features_df=mut_features_df.loc[mut_features_df["protein"].isin(crossval_proteins), :],
                                           sel_columns=selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist(),

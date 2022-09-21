@@ -1,12 +1,8 @@
 import pandas as pd
 from umap import UMAP
 
-from library.global_fun import save_pickle
-
 
 def umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric, fingerprint_type):
-    save_pickle('umap_compress_fingerprint.pkl', features_df, n_neighbors, min_dist, n_components, metric,
-                fingerprint_type)
     print("Reducing %s dimensions with UMAP from %i to % i " % (fingerprint_type, features_df.shape[1], n_components))
     other_columns = features_df.columns[~features_df.columns.str.startswith(fingerprint_type)]
     compressed_df = _ump_trans(features_df.filter(regex='^%s[0-9]+$' % fingerprint_type),
