@@ -9,7 +9,7 @@ from library.explainability import _return_perm_imp, _plot_shap
 from library.utils.print_functions import ColorPrint
 
 
-def train_learning_model(learning_model_type, perm_n_repeats):
+def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY):
 
     learning_model_functions = {
         'Logistic Regression': LogisticRegression(n_jobs=-1, max_iter=500),
@@ -52,7 +52,7 @@ def train_learning_model(learning_model_type, perm_n_repeats):
         if perm_n_repeats > 0: _return_perm_imp(learning_model_functions[learning_model_type], features_df[sel_columns],
                                                 features_df['is_active'], n_repeats=perm_n_repeats)
         # TODO: SHAP works only for trees currently
-        _plot_shap(learning_model_functions[learning_model_type], features_df[sel_columns])
+        if plot_SHAPLEY:   _plot_shap(learning_model_functions[learning_model_type], features_df[sel_columns])
 
         return learning_model_functions[learning_model_type], importances_df
 

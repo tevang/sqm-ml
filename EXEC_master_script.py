@@ -121,7 +121,9 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     compress_PCA=Settings.HYPER_COMPRESS_PLEC_PCA,
                                     compress_UMP=Settings.HYPER_COMPRESS_PLEC_UMAP,
                                     PLEC_pca_variance_explained_cutoff=Settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF,
-                                    perm_n_repeats=Settings.PERM_N_REPEATS)
+                                    perm_n_repeats=Settings.PERM_N_REPEATS,
+                                    plot_SHAPLEY=Settings.PLOT_SHAPLEY,
+                                    features_for_training=Settings.FEATURES_FOR_TRAINING)
 
 if __name__ == "__main__":
 

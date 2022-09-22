@@ -143,9 +143,14 @@ class settings:
         self.METRIC = 'correlation'
         # --
 
-        # Permutation Feature Importances
+        # Feature Importances
         self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
+        self.PLOT_SHAPLEY = False
         # --
+
+        # MERELY FOR THE PUBLICATION
+        self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
+                                     self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
 
         # *****
 

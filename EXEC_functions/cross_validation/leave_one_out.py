@@ -5,6 +5,7 @@ from library.features.dimensionality_reduction.PCA import pca_compress_fingerpri
 from library.features.dimensionality_reduction.UMAP import umap_compress_fingerprint
 from library.features.dimensionality_reduction.feature_selection import best_feature_selector
 from library.train_model import train_learning_model
+from library.utils.print_functions import ColorPrint
 from library.weights import compute_activity_ratio_weights, compute_featvec_similarity_weights, \
     compute_maxvariance_featvec_similarity_weights, no_weights
 
@@ -25,7 +26,8 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                 min_dist, n_components, metric, learning_model_type="Logistic Regression",
                                 sample_weight_type=None, compress_PCA=False, compress_UMP=False,
                                 PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
-                                max_best_features=31, perm_n_repeats=10):
+                                max_best_features=31, perm_n_repeats=10, plot_SHAPLEY=False,
+                                features_for_training=[]):
 
     SAMPLE_WEIGHT_FUNCTIONS = {
         None: no_weights,
@@ -35,25 +37,35 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
     }
 
     evaluation_dfs = []
-    predictor = train_learning_model(learning_model_type=learning_model_type, perm_n_repeats=perm_n_repeats)
+    predictor = train_learning_model(learning_model_type=learning_model_type, perm_n_repeats=perm_n_repeats,
+                                     plot_SHAPLEY=plot_SHAPLEY)
 
-    if 'plec1' in features_df.columns and compress_UMP:
+    if 'plec' in features_for_training and 'plec1' in features_df.columns and compress_UMP:
         features_df = umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric,
                                                     fingerprint_type='plec')
 
-    if 'plec1' in features_df.columns and compress_PCA:
+    if 'plec' in features_for_training and 'plec1' in features_df.columns and compress_PCA:
         features_df = pca_compress_fingerprint(features_df, fingerprint_type='plec',
                                                    pca_variance_explained_cutoff=PLEC_pca_variance_explained_cutoff)
 
-    for crossval_proteins, xtest_proteins in \
-            leave_one_out(XTEST_PROTEINS):
+    # Solely for the Publication
+    if 'plec' not in features_for_training: features_df.drop(labels=features_df.filter(regex='^[plecmarcu_]+[0-9]+$') \
+                                                             .columns.tolist(), axis=1, inplace=True)
+    else:   features_for_training.remove('plec')
+    selected_features = [sf for sf in selected_features if sf in features_for_training]
+
+    for crossval_proteins, xtest_proteins in leave_one_out(XTEST_PROTEINS):
         mut_features_df = features_df.copy()
         print(crossval_proteins, xtest_proteins)
-        print("XTEST: %s" % xtest_proteins[0])  # always one protein in the list
+        ColorPrint("XTEST: %s" % xtest_proteins[0], "BOLDGREEN")  # always one protein in the list
         crossval_proteins += CROSSVAL_PROTEINS
 
         print("FEATURES:", selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist())
-
+        ColorPrint("The xtest set containts {} actives and {} inactives.".format(
+            mut_features_df.loc[mut_features_df["protein"].isin(xtest_proteins) &
+                                (mut_features_df['is_active']==1)].shape[0],
+            mut_features_df.loc[mut_features_df["protein"].isin(xtest_proteins) &
+                                (mut_features_df['is_active']==0)].shape[0]), "OKBLUE")
         model, importances_df = predictor(features_df=mut_features_df.loc[mut_features_df["protein"].isin(crossval_proteins), :],
                                           sel_columns=selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist(),
                                           sample_weight=SAMPLE_WEIGHT_FUNCTIONS[sample_weight_type](mut_features_df, selected_features, xtest_proteins))
