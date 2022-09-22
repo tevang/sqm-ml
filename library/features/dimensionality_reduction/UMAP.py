@@ -5,8 +5,7 @@ from library.utils.print_functions import ColorPrint
 
 
 def umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric, fingerprint_type):
-    ColorPrint("Reducing %s dimensions with UMAP from %i to % i " % (fingerprint_type, features_df.shape[1],
-                                                                     n_components), "OKBLUE")
+    ColorPrint("Reducing %s dimensions with UMAP." % fingerprint_type, "OKBLUE")
     other_columns = features_df.columns[~features_df.columns.str.startswith(fingerprint_type)]
     compressed_df = _ump_trans(features_df.filter(regex='^%s[0-9]+$' % fingerprint_type),
                                n_neighbors, min_dist, n_components, metric)

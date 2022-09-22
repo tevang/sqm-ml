@@ -124,13 +124,15 @@ def gather_all_PLEC_to_one_csv(PLEC_dir, pdb_file_args, out_csv):
 def load_PLEC(features_df, PROTEINS, Settings):
 
     complex_names = features_df.apply(lambda r: '%s_pose%i_frm%i' %
-                                                (r['structvar'], r['pose'], r['frame']), axis=1)
+                                                (r['structvar'], r['pose'], r['frame']), axis=1).values
     df_list = []
     for protein in PROTEINS:
         print("Loading %s PLEC fingerprints." % protein)
         df_reader = pd.read_csv(Settings.raw_input_file('_PLEC.csv.gz', protein), chunksize=10000)
         for df in df_reader:
             df.dropna(axis=1)
+            print("Read another {} lines from {}".format(df.shape[0],
+                                                          Settings.raw_input_file('_PLEC.csv.gz', protein)))
             df = df.astype({col: 'uint8' for col in df.filter(regex='^[0-9]').columns})
             df['complex_name'] = df['complex_name'].str.lower()
             df_list.append(df.loc[df['complex_name'].isin(complex_names)].assign(protein=protein))

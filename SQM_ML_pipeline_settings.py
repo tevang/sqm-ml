@@ -5,7 +5,7 @@ class settings:
         self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
-        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/3D_UMAP_plots'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -26,10 +26,11 @@ class settings:
         self.HYPER_OUTLIER_MAD_THRESHOLD = 8.0
         self.HYPER_OUTLIER_MIN_SCORED_POSE_NUM = 0  # keep only structvars with more than this number of scored poses
         self.HYPER_KEEP_MAX_N_POSES = 100  # keep at maximum this number of Glide poses per structvar for SQM scoring
-        self.HYPER_KEEP_MAX_DeltaG_POSES = 5.0  # keep per structvar at maximum Glide poses with this energy difference
+        self.HYPER_KEEP_MAX_DeltaG_POSES = 1.0  # keep per structvar at maximum Glide poses with this energy difference
         # (kcal/mol) from the top scored for SQM scoring
-        self.HYPER_ABSOLUTE_MAX_DeltaG = True   # if True then only compounds and poses within HYPER_KEEP_MAX_DeltaG_POSES
-        # window from the lowest scores compound/pose will be retained for SQM scoring. Many compounds will be discarded!
+        self.HYPER_IS_GLOBAL_DeltaG = False   # if True then the HYPER_KEEP_MAX_DeltaG_POSES is calculated from the global
+        # docking score minimum of the given receptor set. Many compounds will be discarded! If False, then for every
+        # basemolname a new docking score minimum will be computed (minimum within the group).
         self.HYPER_KEEP_POSE_COLUMN = 'r_i_docking_score'  # use this column to keep the best Glide poses for SQM scoring
         self.HYPER_CONFORMER_ENERGY_CUTOFF_LIST = [6.0, 9.0,
                                                    12.0]  # kcal/mol (according to Chan et al. 'Understanding conformational entropy in small molecules', 2020
