@@ -47,7 +47,7 @@ def launch_plotting(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
         Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_EXECUTION_DIR_NAME,
         "%i_proteins" % len(XTEST_PROTEINS) + "_scaled_nonuniform_all" + Settings.create_feature_csv_name()))
     EXEC_crossval_plots(scaled_features_df, CROSSVAL_PROTEINS=CROSSVAL_PROTEINS, XTEST_PROTEINS=XTEST_PROTEINS,
-                        settings=Settings)
+                        Settings=Settings)
 
 
 if __name__ == "__main__":
