@@ -32,7 +32,7 @@ DESCRIPTION:
     parser.add_argument("-cvp", "--crossval-proteins", dest="CROSSVAL_PROTEINS", required=False, type=str, default="",
                         help="Protein names of the cross-validation set (training and validation of SQM-ML)"
                              " separated by ','. E.g. -tp 'MARK4,PARP-1,JNK2'")
-    parser.add_argument("-exec_dir", dest="EXECUTION_DIR_NAME", required=False, type=str, default="execution_dir",
+    parser.add_argument("-exec_dir", dest="EXECUTION_DIR_NAME", required=False, type=str, default=None,
                         help="Name of the execution directory where all output files will be saved. "
                              "Default: %(default)s")
     parser.add_argument("-f", dest="FORCE_COMPUTATION", required=False, default=False, action='store_true',
@@ -48,7 +48,7 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
         Settings = settings()
 
     Settings.HYPER_FORCE_COMPUTATION = FORCE_COMPUTATION
-    Settings.HYPER_EXECUTION_DIR_NAME = EXECUTION_DIR_NAME
+    Settings.HYPER_EXECUTION_DIR_NAME = Settings.HYPER_EXECUTION_DIR_NAME if EXECUTION_DIR_NAME is None else EXECUTION_DIR_NAME
     CROSSVAL_PROTEINS = [p for p in CROSSVAL_PROTEINS_STRING.split(",") if len(p) > 0]
     XTEST_PROTEINS = [p for p in XTEST_PROTEINS_STRING.split(",") if len(p) > 0]
 
