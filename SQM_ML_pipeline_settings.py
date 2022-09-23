@@ -4,8 +4,8 @@ class settings:
 
         self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
-        self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
-        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/3D_UMAP_plots'
+        self.HYPER_EXECUTION_DIR_NAME = 'execution_dir_only_PLEC'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots_only_PLEC'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -149,8 +149,7 @@ class settings:
         # --
 
         # MERELY FOR THE PUBLICATION
-        self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
-                                     self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
+        self.FEATURES_FOR_TRAINING = ['plec']
 
         # *****
 

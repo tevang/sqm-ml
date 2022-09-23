@@ -29,6 +29,7 @@ def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY):
 
     def _train_model(features_df, sel_columns, sample_weight=None):
         ColorPrint("Training {}".format(learning_model_type), 'OKBLUE')
+        print("DEBUG _train_model:, sel_columns=", sel_columns)
 
         importances_df = pd.DataFrame([])
 

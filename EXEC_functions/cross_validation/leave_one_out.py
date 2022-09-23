@@ -53,6 +53,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                                              .columns.tolist(), axis=1, inplace=True)
     else:   features_for_training.remove('plec')
     selected_features = [sf for sf in selected_features if sf in features_for_training]
+    print("DEBUG: selected_features=", selected_features)
 
     for crossval_proteins, xtest_proteins in leave_one_out(XTEST_PROTEINS):
         mut_features_df = features_df.copy()
@@ -68,7 +69,9 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                 (mut_features_df['is_active']==0)].shape[0]), "OKBLUE")
         model, importances_df = predictor(features_df=mut_features_df.loc[mut_features_df["protein"].isin(crossval_proteins), :],
                                           sel_columns=selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist(),
-                                          sample_weight=SAMPLE_WEIGHT_FUNCTIONS[sample_weight_type](mut_features_df, selected_features, xtest_proteins))
+                                          sample_weight=SAMPLE_WEIGHT_FUNCTIONS[sample_weight_type](
+                                              mut_features_df, selected_features + mut_features_df.filter(
+                                                  regex='^[plecmarcu_]+[0-9]+$').columns.tolist(), xtest_proteins))
 
         sel_columns = selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist()
 
