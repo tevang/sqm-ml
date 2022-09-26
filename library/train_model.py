@@ -21,7 +21,7 @@ def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY):
         'Linear SVC': LinearSVC(),
         'SVC': SVC(probability=True),
         'NuSVC': NuSVC(probability=True, nu=0.01),
-        'Random Forest': RandomForestClassifier(n_estimators=100, n_jobs=-1),
+        'Random Forest': RandomForestClassifier(n_estimators=1000, n_jobs=-1),
         'Gradient Boosting': GradientBoostingClassifier(max_features=2),
         'AdaBoost': AdaBoostClassifier(),
         'MLP': MLPClassifier(hidden_layer_sizes=(1,), max_iter=1000)
