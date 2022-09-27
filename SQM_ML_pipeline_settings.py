@@ -149,7 +149,8 @@ class settings:
         # --
 
         # MERELY FOR THE PUBLICATION
-        self.FEATURES_FOR_TRAINING = ['plec']
+        self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
+                                     self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
 
         # *****
 
