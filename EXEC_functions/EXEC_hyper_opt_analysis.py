@@ -23,7 +23,7 @@ def EXEC_collect_hyper_results(Settings, hyper_dir="."):
 
 
     def _join_evaluation(r):
-        hyper_folder = r["HYPER_SQMNN_ROOT_DIR"] + "/" + r["HYPER_EXECUTION_DIR_NAME"]
+        hyper_folder = r["HYPER_SQM_ML_ROOT_DIR"] + "/" + r["HYPER_EXECUTION_DIR_NAME"]
         eval_df = None
         for eval_file in list_files(hyper_folder, pattern=".*_evaluation.csv.gz", full_path=True):
             protein = os.path.basename(eval_file).split('_')[0]

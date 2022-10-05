@@ -1,10 +1,14 @@
-class Settings:
+import os
+
+
+class settings:
 
     def __init__(self):
 
-        self.HYPER_SQMNN_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
+        self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -25,10 +29,11 @@ class Settings:
         self.HYPER_OUTLIER_MAD_THRESHOLD = 8.0
         self.HYPER_OUTLIER_MIN_SCORED_POSE_NUM = 0  # keep only structvars with more than this number of scored poses
         self.HYPER_KEEP_MAX_N_POSES = 100  # keep at maximum this number of Glide poses per structvar for SQM scoring
-        self.HYPER_KEEP_MAX_DeltaG_POSES = 5.0  # keep per structvar at maximum Glide poses with this energy difference
+        self.HYPER_KEEP_MAX_DeltaG_POSES = 1.0  # keep per structvar at maximum Glide poses with this energy difference
         # (kcal/mol) from the top scored for SQM scoring
-        self.HYPER_ABSOLUTE_MAX_DeltaG = True   # if True then only compounds and poses within HYPER_KEEP_MAX_DeltaG_POSES
-        # window from the lowest scores compound/pose will be retained for SQM scoring. Many compounds will be discarded!
+        self.HYPER_IS_GLOBAL_DeltaG = False   # if True then the HYPER_KEEP_MAX_DeltaG_POSES is calculated from the global
+        # docking score minimum of the given receptor set. Many compounds will be discarded! If False, then for every
+        # basemolname a new docking score minimum will be computed (minimum within the group).
         self.HYPER_KEEP_POSE_COLUMN = 'r_i_docking_score'  # use this column to keep the best Glide poses for SQM scoring
         self.HYPER_CONFORMER_ENERGY_CUTOFF_LIST = [6.0, 9.0,
                                                    12.0]  # kcal/mol (according to Chan et al. 'Understanding conformational entropy in small molecules', 2020
@@ -126,10 +131,30 @@ class Settings:
 
         # PLEC
         self.HYPER_PLEC = True
-        self.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF = 20 # 0.2
-        self.HYPER_COMPRESS_PLEC = True
-        self.HYPER_COMPRESS_UMP = False
         # --
+
+        # PCA dimensionality reduction hyper-parameters
+        self.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF = 20  # 0.2
+        self.HYPER_COMPRESS_PLEC_PCA = False
+        # --
+
+        # UMAP dimensionality reduction hyper-parameters
+        self.HYPER_COMPRESS_PLEC_UMAP = True
+        self.N_NEIGHBORS = 50
+        self.MIN_DIST = 0.1
+        self.N_COMPONENTS = 3
+        self.METRIC = 'correlation'
+        # --
+
+        # Feature Importances
+        self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
+        self.PLOT_SHAPLEY = False
+        self.WRITE_SHAPLEY = True
+        # --
+
+        # MERELY FOR THE PUBLICATION
+        self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
+                                     self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
 
         # *****
 
@@ -139,12 +164,12 @@ class Settings:
     def generated_file(self, file, protein=None):
         if not protein:
             protein = self.HYPER_PROTEIN
-        return self.HYPER_SQMNN_ROOT_DIR + '/' + self.HYPER_EXECUTION_DIR_NAME + '/' + protein + file
+        return self.HYPER_SQM_ML_ROOT_DIR + '/' + self.HYPER_EXECUTION_DIR_NAME + '/' + protein + file
 
     def raw_input_file(self, file, protein=None):
         if not protein:
             protein = self.HYPER_PROTEIN
-        return self.HYPER_SQMNN_ROOT_DIR + '/' + protein + '/' + protein + file
+        return self.HYPER_SQM_ML_ROOT_DIR + '/' + protein + '/' + protein + file
 
     def create_feature_csv_name(self):
         return '_features.SF_%s.SBBSB_%s.SBSPB_%s.HC_%s.FM_%s.RSP_%s.' \

@@ -37,20 +37,20 @@ def EXEC_load_sqm_scores(how, Settings):
 
     if Settings.HYPER_SQM_FOLDER_SUFFIX:
         ALL_SCORES_dict = {
-            "P6C": "%s/%s/PM6_COSMO%s/ALL_RESULTS.csv" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN,
+            "P6C": "%s/%s/PM6_COSMO%s/ALL_RESULTS.csv" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN,
                                                       Settings.HYPER_SQM_FOLDER_SUFFIX),
-            # "P6C2": "%s/%s/PM6_COSMO2%s/ALL_RESULTS" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN,
+            # "P6C2": "%s/%s/PM6_COSMO2%s/ALL_RESULTS" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN,
             # Settings.HYPER_SQM_FOLDER_SUFFIX),
-            # "P7C": "%s/%s/PM7_COSMO%s/ALL_RESULTS" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN,
+            # "P7C": "%s/%s/PM7_COSMO%s/ALL_RESULTS" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN,
             # Settings.HYPER_SQM_FOLDER_SUFFIX)
         }
     else:
         ALL_SCORES_dict = {
-            "P6C": "%s/%s/PM6_COSMO%s/ALL_RESULTS" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN,
+            "P6C": "%s/%s/PM6_COSMO%s/ALL_RESULTS" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN,
                                                           Settings.HYPER_SQM_FOLDER_SUFFIX),
-            # "P6C2": "%s/%s/PM6_COSMO2%s/ALL_RESULTS" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN,
+            # "P6C2": "%s/%s/PM6_COSMO2%s/ALL_RESULTS" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN,
             # Settings.HYPER_SQM_FOLDER_SUFFIX),
-            # "P7C": "%s/%s/PM7_COSMO%s/ALL_RESULTS" % (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN,
+            # "P7C": "%s/%s/PM7_COSMO%s/ALL_RESULTS" % (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN,
             # Settings.HYPER_SQM_FOLDER_SUFFIX)
         }
     df_list = [_read_sqm_score_file(ALL_SCORES_dict[SF], SF, Settings=Settings)

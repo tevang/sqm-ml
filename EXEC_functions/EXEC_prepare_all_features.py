@@ -27,11 +27,9 @@ def EXEC_prepare_all_features(Settings):
     glide_df = EXEC_load_Glide(Settings=Settings)
 
     # KEEP ONLY TOP GLIDE POSES FOR SQM SCORING
-    glide_top_poses_df = EXEC_select_top_Glide_poses(glide_df, Settings=Settings,
+    glide_top_poses_df = EXEC_select_top_Glide_poses(glide_df,
                                                      structvar_pose_sel_column='r_i_docking_score',
-                                                     DeltaG=Settings.HYPER_KEEP_MAX_DeltaG_POSES,
-                                                     N_poses=Settings.HYPER_KEEP_MAX_N_POSES,
-                                                     is_absolute_DeltaG=Settings.HYPER_ABSOLUTE_MAX_DeltaG)
+                                                     Settings=Settings)
 
     # ADD EXPERIMENTAL ACTIVITIES
     glide_top_poses_activities_df = EXEC_add_activities(glide_top_poses_df, Settings=Settings)

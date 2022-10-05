@@ -1,3 +1,5 @@
+import os
+
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
@@ -5,10 +7,11 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC, NuSVC
 
 from learning_models.logistic_regression.logistic_regression import LogisticRegressionGroupedSamples
-from library.explainability import _return_perm_imp, _plot_shap
+from library.explainability import _return_perm_imp, _compute_shap
+from library.utils.print_functions import ColorPrint
 
 
-def train_learning_model(learning_model_type):
+def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY, write_SHAPLEY):
 
     learning_model_functions = {
         'Logistic Regression': LogisticRegression(n_jobs=-1, max_iter=500),
@@ -20,14 +23,14 @@ def train_learning_model(learning_model_type):
         'Linear SVC': LinearSVC(),
         'SVC': SVC(probability=True),
         'NuSVC': NuSVC(probability=True, nu=0.01),
-        'Random Forest': RandomForestClassifier(n_estimators=100, n_jobs=-1),
+        'Random Forest': RandomForestClassifier(n_estimators=1000, n_jobs=-1),
         'Gradient Boosting': GradientBoostingClassifier(max_features=2),
         'AdaBoost': AdaBoostClassifier(),
         'MLP': MLPClassifier(hidden_layer_sizes=(1,), max_iter=1000)
     }
 
-    def _train_model(features_df, sel_columns, sample_weight=None):
-
+    def _train_model(features_df, sel_columns, sample_weight=None, csv_path_SHAPLEY=None):
+        ColorPrint("Training {}".format(learning_model_type), 'OKBLUE')
         importances_df = pd.DataFrame([])
 
         if learning_model_type == 'Logistic Regression Grouped Samples':
@@ -47,11 +50,14 @@ def train_learning_model(learning_model_type):
                 sel_columns, learning_model_functions[learning_model_type].feature_importances_)})
             print('Feature Importances:', importances_df.iloc[0].sort_values(ascending=False).to_dict())
 
-        # TODO explainability, SHAP works only for trees currently
-        _return_perm_imp(learning_model_functions[learning_model_type], features_df[sel_columns],
-                         features_df['is_active'])
-
-        _plot_shap(learning_model_functions[learning_model_type], features_df[sel_columns])
+        if perm_n_repeats > 0: _return_perm_imp(learning_model_functions[learning_model_type], features_df[sel_columns],
+                                                features_df['is_active'], n_repeats=perm_n_repeats)
+        # TODO: SHAP works only for trees currently
+        if plot_SHAPLEY or write_SHAPLEY:
+            if csv_path_SHAPLEY and not os.path.exists(os.path.dirname(csv_path_SHAPLEY)): os.mkdir(os.path.dirname(csv_path_SHAPLEY))
+            shap_df = _compute_shap(learning_model_functions[learning_model_type], features_df[sel_columns], plot_SHAPLEY,
+                                    write_SHAPLEY, csv_path=csv_path_SHAPLEY)
+            importances_df = shap_df[['feature', 'importance']].set_index('feature').T.rename(index={'importance': 0}) # replace RF importances
 
         return learning_model_functions[learning_model_type], importances_df
 

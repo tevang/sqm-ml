@@ -10,7 +10,7 @@ lg = logging.getLogger(__name__)
 def EXEC_compute_min_structvar_ligandE_free(Settings):
 
     return pd.read_csv("%s/%s/%s_all_compounds-ligprep.renstereo_ion_tau-3000confs.PM6_COSMO.csv.gz" %
-                       (Settings.HYPER_SQMNN_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN)) \
+                       (Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_PROTEIN, Settings.HYPER_PROTEIN)) \
         .rename(columns={"Energy:": "P6C_energy"}) \
         .assign(molname=lambda df: df["molname"].str.lower()) \
         .assign(structvar=lambda df: df["molname"].str \
