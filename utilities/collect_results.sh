@@ -10,6 +10,7 @@ repeat=$1
 for d in 3 4 5 6 7 8 9 10 20 30 40 50 60 70 80 90 100;
 do
   grep "model =" results_${d}D-UMAP_repeat${repeat}.log | awk '{print $7}';
+  #grep "model =" results_repeat${repeat}.log | awk '{print $7}';
 done | awk '{if(NR%18==0){printf "%s\n", $1} else {printf "%s\t", $1}}' > table.txt
 
 awk 'BEGIN {

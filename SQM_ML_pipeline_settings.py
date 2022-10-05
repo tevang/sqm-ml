@@ -1,11 +1,14 @@
+import os
+
+
 class settings:
 
     def __init__(self):
 
         self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
-        self.HYPER_EXECUTION_DIR_NAME = 'execution_dir_only_PLEC'
-        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots_only_PLEC'
+        self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -146,6 +149,7 @@ class settings:
         # Feature Importances
         self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
         self.PLOT_SHAPLEY = False
+        self.WRITE_SHAPLEY = True
         # --
 
         # MERELY FOR THE PUBLICATION
