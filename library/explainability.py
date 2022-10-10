@@ -28,13 +28,12 @@ def _compute_shap(model, x, plot, write, csv_path):
     shap_values = explainer.shap_values(x)[0]
     df = pd.DataFrame([[np.mean(np.abs(shap_values[:, i])) for i in range(shap_values.shape[1])]],
                       columns=x.columns, index=['importance'])
-    shap_df = pd.concat([df, softmax(df).rename(index={'importance': 'norm_importance'})]).T.sort_values(
-        by='importance') \
+    shap_df = pd.concat([df, pd.DataFrame(softmax(df), columns=df.columns, index=['norm_importance'])]) \
+        .T.sort_values(by='importance') \
         .reset_index().rename(columns={'index': 'feature'})
     if write:
         _write_Shapley_values(shap_df, csv_path)
     if plot:
-        print(shap.summary_plot([shap_values], x.values,
-                                plot_type="bar", class_names=[0, 1], feature_names=x.columns))
+        print(shap.summary_plot([shap_values], x.values, plot_type="bar", class_names=[0, 1], feature_names=x.columns))
     return shap_df
 
