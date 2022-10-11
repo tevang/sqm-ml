@@ -13,4 +13,4 @@ def get_bond_types_count_as_vector(mol):
 
     return pd.DataFrame(data={**{'structvar': [mol.GetProp('_Name')]}, **bond_dict,
                               **{'bondType_'+str(k): [v] for k, v in
-                              Counter([b.GetBondTypeAsDouble() for b in mol.GetBonds()]).items()}})
+                              Counter([b.GetBondType() for b in mol.GetBonds()]).items()}})

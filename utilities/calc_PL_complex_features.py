@@ -1,9 +1,10 @@
 #!/usr/bin/env python
+
 import multiprocessing
 import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import pandas as pd
-
+import pretty_errors
 from library.utils.print_functions import ColorPrint
 from library.global_fun import list_files, get_structvar, replace_alt
 

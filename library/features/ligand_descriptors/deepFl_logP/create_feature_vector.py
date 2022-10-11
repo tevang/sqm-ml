@@ -2,6 +2,8 @@ import numpy as np
 from rdkit.Chem import Descriptors
 from rdkit.Chem.EState import Fingerprinter
 
+from library.features.ligand_descriptors.deepFl_logP.molecular_fragment_definitions import *
+
 
 def create_feature_vector(mol):
     prints = Fingerprinter.FingerprintMol(mol)[0]

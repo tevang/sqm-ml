@@ -38,6 +38,7 @@ def calculate_physchem_descriptors_from_mols(mols,
 
     if selected_descriptors_logtransform:  # append also the logarithmically transformed values
         # TODO: this np.min is temporary fix. For universal compatibility you must find unique values for each descriptor
+
         featvec_df.loc[:, selected_descriptors_logtransform] = featvec_df[selected_descriptors_logtransform] \
             .apply(lambda c: np.log(c - c.min() + 1))   # +1 to avoid inf values
 

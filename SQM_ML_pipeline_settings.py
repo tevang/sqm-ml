@@ -81,24 +81,6 @@ class settings:
 
         # 2D DESCRIPTORS
         self.HYPER_2D_DESCRIPTORS = ['MW', 'AMW', 'deepFl_logP',
-                                     # '0_contiguous_rotbonds',
-                                     # '1_contiguous_rotbonds', '2_contiguous_rotbonds', '3_contiguous_rotbonds',
-                                     # '4_contiguous_rotbonds', '5_contiguous_rotbonds', '6_contiguous_rotbonds',
-                                     # '7_contiguous_rotbonds', '8_contiguous_rotbonds', '9_contiguous_rotbonds',
-                                     # '10_contiguous_rotbonds', '11_contiguous_rotbonds', '12_contiguous_rotbonds',
-                                     # '13_contiguous_rotbonds', '14_contiguous_rotbonds', '15_contiguous_rotbonds',
-                                     # '16_contiguous_rotbonds', '17_contiguous_rotbonds', '18_contiguous_rotbonds',
-                                     # '19_contiguous_rotbonds', '20_contiguous_rotbonds', '21_contiguous_rotbonds',
-                                     # '22_contiguous_rotbonds', '23_contiguous_rotbonds', '24_contiguous_rotbonds',
-                                     # '25_contiguous_rotbonds', '26_contiguous_rotbonds', '27_contiguous_rotbonds',
-                                     # '28_contiguous_rotbonds', '29_contiguous_rotbonds', '30_contiguous_rotbonds',
-                                     # '31_contiguous_rotbonds', '32_contiguous_rotbonds', '33_contiguous_rotbonds',
-                                     # '34_contiguous_rotbonds', '35_contiguous_rotbonds', '36_contiguous_rotbonds',
-                                     # '37_contiguous_rotbonds', '38_contiguous_rotbonds', '39_contiguous_rotbonds',
-                                     # '40_contiguous_rotbonds', '41_contiguous_rotbonds', '42_contiguous_rotbonds',
-                                     # '43_contiguous_rotbonds', '44_contiguous_rotbonds', '45_contiguous_rotbonds',
-                                     # '46_contiguous_rotbonds', '47_contiguous_rotbonds', '48_contiguous_rotbonds',
-                                     # '49_contiguous_rotbonds', '50_contiguous_rotbonds',
                                      'rotor_count', 'terminal_CH3_count', 'function_group_count',
                                      'ring_flexibility', 'Hbond_foldability', 'pipi_stacking_foldability',
                                      'bondType_UNSPECIFIED', 'bondType_SINGLE', 'bondType_DOUBLE', 'bondType_TRIPLE',
@@ -140,7 +122,7 @@ class settings:
 
         # UMAP dimensionality reduction hyper-parameters
         self.HYPER_COMPRESS_PLEC_UMAP = True
-        self.N_NEIGHBORS = 50
+        self.N_NEIGHBORS = 40
         self.MIN_DIST = 0.1
         self.N_COMPONENTS = 3
         self.METRIC = 'correlation'

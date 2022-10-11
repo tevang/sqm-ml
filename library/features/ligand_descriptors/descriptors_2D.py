@@ -6,6 +6,7 @@ from library.features.ligand_descriptors.bond_types import get_bond_types_count_
 from library.features.ligand_descriptors.deepFl_logP.compute_logP import compute_logP
 from library.features.ligand_descriptors.physchem_descriptors import calculate_physchem_descriptors_from_mols
 from library.features.ligand_descriptors.rotbonds import create_rotbond_featvec_from_mol
+from library.global_fun import save_pickle
 from library.molfile.ligfile_parser import load_structure_file
 import pandas as pd
 
@@ -30,7 +31,7 @@ def get_rotbond_featvec_from_mol_df(max_rotbond_count=50, include_numrotbonds=Fa
 
     return _get_rotbond_featvec_from_mol_df
 
-def calc_2D_descriptors(multimol_sdf, sel_physchem_descriptors, sel_rotbond_descriptors,
+def calc_2D_descriptors(multimol_sdf, sel_physchem_descriptors, sel_rotbond_descriptors, nproc,
                         selected_descriptors_logtransform=[]):
 
     structvar_SMI_conf_mdict = load_structure_file(multimol_sdf, keep_structvar=True, get_SMILES=False, addHs=True)
@@ -39,6 +40,7 @@ def calc_2D_descriptors(multimol_sdf, sel_physchem_descriptors, sel_rotbond_desc
     featvecs_df = \
         calculate_physchem_descriptors_from_mols(mols=[structvar_SMI_conf_mdict[m]['SMI']
                                                        for m in structvar_SMI_conf_mdict.keys()],
+                                                 nproc=nproc,
                                                  selected_descriptors=sel_physchem_descriptors,
                                                  selected_descriptors_logtransform=selected_descriptors_logtransform)
 
