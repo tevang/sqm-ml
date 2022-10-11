@@ -1,11 +1,13 @@
 import pandas as pd
 
-from library.global_fun import list_files
+xtest = ['A2A', 'CATL', 'DHFR', 'GBA', 'GR', 'HIV1RT', 'MK2', 'PPARG', 'SARS-HCoV', 'SIRT2', 'TPA', 'TP']
 
-df = pd.concat([pd.read_csv(csv).assign(csv=csv) for csv in list_files(
-    '/home2/shared_files/sqm-ml_data/plots', pattern='.*\.csv', full_path=True)], ignore_index=True) \
+df = pd.concat([pd.read_csv(f'/home2/shared_files/sqm-ml_data/plots/{p}_SHAP_importances.csv') \
+               .assign(csv=f'/home2/shared_files/sqm-ml_data/plots/{p}_SHAP_importances.csv') for p in xtest],
+               ignore_index=True) \
     .groupby(by=['feature']) \
     .apply('mean') \
-    .reset_index()
-df.to_csv('average_SHAP_per_feature.csv', index=False)
+    .reset_index() \
+    .sort_values(by='importance', ascending=False)
+df.to_csv('average_xtest_SHAP_per_feature.csv', index=False)
 

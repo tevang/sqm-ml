@@ -11,7 +11,7 @@ from library.explainability import _return_perm_imp, _compute_shap
 from library.utils.print_functions import ColorPrint
 
 
-def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY, write_SHAPLEY):
+def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAP, write_SHAP):
 
     learning_model_functions = {
         'Logistic Regression': LogisticRegression(n_jobs=-1, max_iter=500),
@@ -29,7 +29,7 @@ def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY, writ
         'MLP': MLPClassifier(hidden_layer_sizes=(1,), max_iter=1000)
     }
 
-    def _train_model(features_df, sel_columns, sample_weight=None, csv_path_SHAPLEY=None):
+    def _train_model(features_df, sel_columns, sample_weight=None, csv_path_SHAP=None):
         ColorPrint("Training {}".format(learning_model_type), 'OKBLUE')
         importances_df = pd.DataFrame([])
 
@@ -53,10 +53,10 @@ def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAPLEY, writ
         if perm_n_repeats > 0: _return_perm_imp(learning_model_functions[learning_model_type], features_df[sel_columns],
                                                 features_df['is_active'], n_repeats=perm_n_repeats)
         # TODO: SHAP works only for trees currently
-        if plot_SHAPLEY or write_SHAPLEY:
-            if csv_path_SHAPLEY and not os.path.exists(os.path.dirname(csv_path_SHAPLEY)): os.mkdir(os.path.dirname(csv_path_SHAPLEY))
-            shap_df = _compute_shap(learning_model_functions[learning_model_type], features_df[sel_columns], plot_SHAPLEY,
-                                    write_SHAPLEY, csv_path=csv_path_SHAPLEY)
+        if plot_SHAP or write_SHAP:
+            if csv_path_SHAP and not os.path.exists(os.path.dirname(csv_path_SHAP)): os.mkdir(os.path.dirname(csv_path_SHAP))
+            shap_df = _compute_shap(learning_model_functions[learning_model_type], features_df[sel_columns], plot_SHAP,
+                                    write_SHAP, csv_path=csv_path_SHAP)
             importances_df = shap_df[['feature', 'importance']].set_index('feature').T.rename(index={'importance': 0}) # replace RF importances
 
         return learning_model_functions[learning_model_type], importances_df

@@ -126,8 +126,8 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     compress_UMP=Settings.HYPER_COMPRESS_PLEC_UMAP,
                                     PLEC_pca_variance_explained_cutoff=Settings.HYPER_PLEC_PCA_VARIANCE_EXPLAINED_CUTOFF,
                                     perm_n_repeats=Settings.PERM_N_REPEATS,
-                                    plot_SHAPLEY=Settings.PLOT_SHAPLEY,
-                                    write_SHAPLEY=Settings.WRITE_SHAPLEY,
+                                    plot_SHAP=Settings.PLOT_SHAP,
+                                    write_SHAP=Settings.WRITE_SHAP,
                                     plots_dir=Settings.HYPER_PLOTS_DIR,
                                     features_for_training=Settings.FEATURES_FOR_TRAINING)
 

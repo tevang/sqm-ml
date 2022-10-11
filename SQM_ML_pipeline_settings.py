@@ -148,8 +148,8 @@ class settings:
 
         # Feature Importances
         self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
-        self.PLOT_SHAPLEY = False
-        self.WRITE_SHAPLEY = True
+        self.PLOT_SHAP = False
+        self.WRITE_SHAP = True
         # --
 
         # MERELY FOR THE PUBLICATION

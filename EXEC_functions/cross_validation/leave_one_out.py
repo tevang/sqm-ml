@@ -29,8 +29,8 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                 min_dist, n_components, metric, learning_model_type="Logistic Regression",
                                 sample_weight_type=None, compress_PCA=False, compress_UMP=False,
                                 PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
-                                max_best_features=31, perm_n_repeats=10, plot_SHAPLEY=False,
-                                write_SHAPLEY=False, csv_path_SHAPLEY=None, plots_dir=None,
+                                max_best_features=31, perm_n_repeats=10, plot_SHAP=False,
+                                write_SHAP=False, csv_path_SHAP=None, plots_dir=None,
                                 features_for_training=[]):
 
     SAMPLE_WEIGHT_FUNCTIONS = {
@@ -42,7 +42,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
 
     evaluation_dfs = []
     predictor = train_learning_model(learning_model_type=learning_model_type, perm_n_repeats=perm_n_repeats,
-                                     plot_SHAPLEY=plot_SHAPLEY, write_SHAPLEY=write_SHAPLEY)
+                                     plot_SHAP=plot_SHAP, write_SHAP=write_SHAP)
 
     if 'plec' in features_for_training and 'plec1' in features_df.columns and compress_UMP:
         features_df = umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric,
@@ -75,7 +75,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                           sample_weight=SAMPLE_WEIGHT_FUNCTIONS[sample_weight_type](
                                               mut_features_df, selected_features + mut_features_df.filter(
                                                   regex='^[plecmarcu_]+[0-9]+$').columns.tolist(), xtest_proteins),
-                                          csv_path_SHAPLEY=os.path.join(plots_dir, xtest_proteins[0] + '_SHAPLEY_importances.csv'))
+                                          csv_path_SHAP=os.path.join(plots_dir, xtest_proteins[0] + '_SHAP_importances.csv'))
 
         sel_columns = selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist()
 
