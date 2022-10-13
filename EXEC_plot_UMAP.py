@@ -15,7 +15,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./EXEC_plot.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'
+    ./EXEC_plot_UMAP.py -xtp 'A2A,ACHE,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=True, type=str, default="",

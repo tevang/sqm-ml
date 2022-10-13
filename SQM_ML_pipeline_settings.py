@@ -8,7 +8,7 @@ class settings:
         self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
         self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
-        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/3D_UMAP_plots'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -122,7 +122,7 @@ class settings:
 
         # UMAP dimensionality reduction hyper-parameters
         self.HYPER_COMPRESS_PLEC_UMAP = True
-        self.N_NEIGHBORS = 40
+        self.N_NEIGHBORS = 50
         self.MIN_DIST = 0.1
         self.N_COMPONENTS = 3
         self.METRIC = 'correlation'
