@@ -38,7 +38,7 @@ DESCRIPTION:
     parser.add_argument("-n_comp", dest="N_COMPONENTS", required=False, type=int, default=None,
                         help="Number of components for UMAP (if activated). "
                              "Default: %(default)s")
-    parser.add_argument("-ml_alg", dest="ML_ALGORITHM", required=False, type=int, default="Random Forest",
+    parser.add_argument("-ml_alg", dest="ML_ALGORITHM", required=False, type=str, default=None,
                         help="The Machine Learning Algorithm. "
                              "Default: %(default)s")
     parser.add_argument("-f", dest="FORCE_COMPUTATION", required=False, default=False, action='store_true',
