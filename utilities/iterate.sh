@@ -6,6 +6,7 @@ n_comp=40
 for ml_alg in "Logistic Regression" "Logistic Regression Grouped Samples" "Logistic Regression CV" "Linear SVC" "SVC" "NuSVC" "Random Forest" "Gradient Boosting" "AdaBoost" "MLP"
 do
 suffix="_crossval_BONDTYPES_$(perl -p -e 's/ /_/g' <<< ${ml_alg})"
+[ ! -e "../../sqm-ml_data/execution_dir${suffix}" ] && mkdir ../../sqm-ml_data/execution_dir${suffix};
 for repeat in $(seq 1 10)
 do
 #for n_comp in 3 4 5 6 7 8 9 10 20 30 40 50 60 70 80 90 100

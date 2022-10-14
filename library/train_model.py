@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 from sklearn.linear_model import LogisticRegression, LogisticRegressionCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import LinearSVC, SVC, NuSVC
+from xgboost import XGBRFClassifier
 
 from learning_models.logistic_regression.logistic_regression import LogisticRegressionGroupedSamples
 from library.explainability import _return_perm_imp, _compute_shap
@@ -20,13 +21,14 @@ def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAP, write_S
         'Logistic Regression CV': LogisticRegressionCV(n_jobs=-1, max_iter=500),
         # 'Ridge Classifier': RidgeClassifier(),
         # 'Ridge Classifier CV': RidgeClassifierCV(),
-        'Linear SVC': LinearSVC(),
+        'Linear SVC': SVC(kernel='linear',probability=True),
         'SVC': SVC(probability=True),
         'NuSVC': NuSVC(probability=True, nu=0.01),
         'Random Forest': RandomForestClassifier(n_estimators=1000, n_jobs=-1),
         'Gradient Boosting': GradientBoostingClassifier(max_features=2),
         'AdaBoost': AdaBoostClassifier(),
-        'MLP': MLPClassifier(hidden_layer_sizes=(1,), max_iter=1000)
+        'MLP': MLPClassifier(hidden_layer_sizes=(1,), max_iter=1000),
+        'xgboost': XGBRFClassifier(n_estimators=1000, n_jobs=-1)
     }
 
     def _train_model(features_df, sel_columns, sample_weight=None, csv_path_SHAP=None):

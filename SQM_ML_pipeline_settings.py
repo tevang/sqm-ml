@@ -18,7 +18,7 @@ class settings:
 
         # LEARNING MODEL
         # --
-        self.HYPER_LEARNING_MODEL_TYPE = 'Random Forest'
+        self.HYPER_LEARNING_MODEL_TYPE = 'xgboost'
         self.SAMPLE_WEIGHTS_TYPE = 'featvec_similarity'
         # --
 
@@ -131,7 +131,7 @@ class settings:
         # Feature Importances
         self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
         self.PLOT_SHAP = False
-        self.WRITE_SHAP = True
+        self.WRITE_SHAP = False
         # --
 
         # MERELY FOR THE PUBLICATION
