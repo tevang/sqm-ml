@@ -43,12 +43,21 @@ DESCRIPTION:
                              "Default: %(default)s")
     parser.add_argument("-f", dest="FORCE_COMPUTATION", required=False, default=False, action='store_true',
                         help="Force computation of scores even if the respective CSV files exist. Default: %(default)s")
+    parser.add_argument("-max_depth", dest="max_depth", required=False, type=int, default=None,
+                        help="Default: %(default)s")
+    parser.add_argument("-max_features", dest="max_features", required=False, type=str, default=None,
+                        help="Default: %(default)s")
+    parser.add_argument("-min_samples_leaf", dest="min_samples_leaf", required=False, type=int, default=None,
+                        help="Default: %(default)s")
+    parser.add_argument("-min_samples_split", dest="min_samples_split", required=False, type=int, default=None,
+                        help="Default: %(default)s")
 
     args = parser.parse_args()
     return args
 
 def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_DIR_NAME, FORCE_COMPUTATION,
-                    N_COMPONENTS, ML_ALGORITHM, Settings=None):
+                    N_COMPONENTS, ML_ALGORITHM, max_depth, max_features, min_samples_leaf, min_samples_split,
+                    Settings=None):
 
     if not Settings:
         Settings = settings()
@@ -57,6 +66,11 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
     Settings.HYPER_EXECUTION_DIR_NAME = Settings.HYPER_EXECUTION_DIR_NAME if EXECUTION_DIR_NAME is None else EXECUTION_DIR_NAME
     Settings.N_COMPONENTS = Settings.N_COMPONENTS if N_COMPONENTS is None else N_COMPONENTS
     Settings.HYPER_LEARNING_MODEL_TYPE = Settings.HYPER_LEARNING_MODEL_TYPE if ML_ALGORITHM is None else ML_ALGORITHM
+    Settings.max_depth = Settings.max_depth if max_depth is None else max_depth
+    Settings.max_features = Settings.max_features if max_features is None else max_features
+    Settings.min_samples_leaf = Settings.min_samples_leaf if min_samples_leaf is None else min_samples_leaf
+    Settings.min_samples_split = Settings.min_samples_split if min_samples_split is None else min_samples_split
+
     CROSSVAL_PROTEINS = [p for p in CROSSVAL_PROTEINS_STRING.split(",") if len(p) > 0]
     XTEST_PROTEINS = [p for p in XTEST_PROTEINS_STRING.split(",") if len(p) > 0]
 
@@ -133,10 +147,15 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     plot_SHAP=Settings.PLOT_SHAP,
                                     write_SHAP=Settings.WRITE_SHAP,
                                     plots_dir=Settings.HYPER_PLOTS_DIR,
-                                    features_for_training=Settings.FEATURES_FOR_TRAINING)
+                                    features_for_training=Settings.FEATURES_FOR_TRAINING,
+                                    max_depth=Settings.max_depth, max_features=Settings.max_features,
+                                    min_samples_leaf=Settings.min_samples_leaf,
+                                    min_samples_split=Settings.min_samples_split
+                                    )
 
 if __name__ == "__main__":
 
     args = cmdlineparse()
     launch_pipeline(args.CROSSVAL_PROTEINS, args.XTEST_PROTEINS, args.EXECUTION_DIR_NAME,
-                    args.FORCE_COMPUTATION, args.N_COMPONENTS, args.ML_ALGORITHM)
+                    args.FORCE_COMPUTATION, args.N_COMPONENTS, args.ML_ALGORITHM,
+                    args.max_depth, args.max_features, args.min_samples_leaf, args.min_samples_split)

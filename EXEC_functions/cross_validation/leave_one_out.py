@@ -31,7 +31,8 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                 PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
                                 max_best_features=31, perm_n_repeats=10, plot_SHAP=False,
                                 write_SHAP=False, csv_path_SHAP=None, plots_dir=None,
-                                features_for_training=[]):
+                                features_for_training=[], max_depth=None, max_features='auto',
+                                                min_samples_leaf=1, min_samples_split=2):
 
     SAMPLE_WEIGHT_FUNCTIONS = {
         None: no_weights,
@@ -42,7 +43,9 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
 
     evaluation_dfs = []
     predictor = train_learning_model(learning_model_type=learning_model_type, perm_n_repeats=perm_n_repeats,
-                                     plot_SHAP=plot_SHAP, write_SHAP=write_SHAP)
+                                     plot_SHAP=plot_SHAP, write_SHAP=write_SHAP, max_depth=max_depth,
+                                     max_features=max_features, min_samples_leaf=min_samples_leaf,
+                                     min_samples_split=min_samples_split)
 
     if 'plec' in features_for_training and 'plec1' in features_df.columns and compress_UMP:
         features_df = umap_compress_fingerprint(features_df, n_neighbors, min_dist, n_components, metric,

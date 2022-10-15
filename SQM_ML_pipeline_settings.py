@@ -18,8 +18,13 @@ class settings:
 
         # LEARNING MODEL
         # --
-        self.HYPER_LEARNING_MODEL_TYPE = 'xgboost'
+        self.HYPER_LEARNING_MODEL_TYPE = 'Random Forest'
         self.SAMPLE_WEIGHTS_TYPE = 'featvec_similarity'
+        # Random Forest hyper-parameters
+        self.max_depth = None
+        self.max_features = 'autom'
+        self.min_samples_leaf = 1
+        self.min_samples_split = 2
         # --
 
         # POSE FILTERING

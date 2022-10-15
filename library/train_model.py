@@ -12,7 +12,8 @@ from library.explainability import _return_perm_imp, _compute_shap
 from library.utils.print_functions import ColorPrint
 
 
-def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAP, write_SHAP):
+def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAP, write_SHAP, max_depth,
+                         max_features, min_samples_leaf, min_samples_split):
 
     learning_model_functions = {
         'Logistic Regression': LogisticRegression(n_jobs=-1, max_iter=500),
@@ -24,7 +25,9 @@ def train_learning_model(learning_model_type, perm_n_repeats, plot_SHAP, write_S
         'Linear SVC': SVC(kernel='linear',probability=True),
         'SVC': SVC(probability=True),
         'NuSVC': NuSVC(probability=True, nu=0.01),
-        'Random Forest': RandomForestClassifier(n_estimators=1000, n_jobs=-1),
+        'Random Forest': RandomForestClassifier(n_estimators=1000, n_jobs=-1, max_depth=max_depth,
+                                                max_features=max_features, min_samples_leaf=min_samples_leaf,
+                                                min_samples_split=min_samples_split),
         'Gradient Boosting': GradientBoostingClassifier(max_features=2),
         'AdaBoost': AdaBoostClassifier(),
         'MLP': MLPClassifier(hidden_layer_sizes=(1,), max_iter=1000),

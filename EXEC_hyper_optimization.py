@@ -33,17 +33,17 @@ args_list = [{**hyper_comb, **{"EXECUTION_DIR_NAME": "hyper_opt_dir/comb%i" % (i
 
 def _launch_pipeline(**hyper_params):
 
-    settings = settings()
+    Settings = settings()
     for hyper_param, hyper_value in hyper_params.items():
-        if hyper_param in settings.__dir__():
-            settings.__setattr__(hyper_param, hyper_value)
+        if hyper_param in Settings.__dir__():
+            Settings.__setattr__(hyper_param, hyper_value)
 
     launch_pipeline(CROSSVAL_PROTEINS_STRING=hyper_params["CROSSVAL_PROTEINS_STRING"],
                     XTEST_PROTEINS_STRING=hyper_params["XTEST_PROTEINS_STRING"],
-                    EXECUTION_DIR_NAME=hyper_params["EXECUTION_DIR_NAME"], FORCE_COMPUTATION=True, Settings=settings)
+                    EXECUTION_DIR_NAME=hyper_params["EXECUTION_DIR_NAME"], FORCE_COMPUTATION=True, Settings=Settings)
 
     # Clean intermediate files to release disk space
-    for fname in list_files(settings.HYPER_SQM_ML_ROOT_DIR + "/" + settings.HYPER_EXECUTION_DIR_NAME,
+    for fname in list_files(Settings.HYPER_SQM_ML_ROOT_DIR + "/" + Settings.HYPER_EXECUTION_DIR_NAME,
                             pattern=".*",
                             full_path=True):
         if not (fname.endswith("_evaluation.csv.gz") or fname.endswith("hyper_parameters.list")):
@@ -59,12 +59,12 @@ apply_function_to_list_of_args_and_concat_resulting_dfs(_launch_pipeline,
 """
 
 # ANALYZE HYPER-PARAMETER OPTIMIZATION RESULTS
-from sqmnn.SQMNN_pipeline_settings import Settings
+from sqmnn.SQMNN_pipeline_settings import settings
 from sqmnn.EXEC_functions.EXEC_hyper_opt_analysis import EXEC_collect_hyper_results, EXEC_report_hyper_results
-settings = Settings()
-settings.HYPER_EXECUTION_DIR_NAME = "hyper_opt_dir"
-settings.HYPER_SQM_ML_ROOT_DIR = '/home/thomas/Documents/QM_Scoring/SQM-ML'
-hyper_opt_df = EXEC_collect_hyper_results(hyper_dir=".", Settings=settings)
+Settings = settings()
+Settings.HYPER_EXECUTION_DIR_NAME = "hyper_opt_dir"
+Settings.HYPER_SQM_ML_ROOT_DIR = '/home/thomas/Documents/QM_Scoring/SQM-ML'
+hyper_opt_df = EXEC_collect_hyper_results(hyper_dir=".", Settings=Settings)
 
 # Do the same on every PC you run HYPER-OPT and collect all such files. Then concatenate the dataframes.
 
