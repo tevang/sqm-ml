@@ -31,7 +31,7 @@ class settings:
         # --
         self.HYPER_RATIO_SCORED_POSES = 0.8
         self.HYPER_REMOVE_OUTLIER_WRT_WHOLE_SET = False
-        self.HYPER_OUTLIER_MAD_THRESHOLD = 8.0
+        self.HYPER_OUTLIER_MAD_THRESHOLD = 999999999; # set to a high value to deactive outlier removal; before was set to 8.0
         self.HYPER_OUTLIER_MIN_SCORED_POSE_NUM = 0  # keep only structvars with more than this number of scored poses
         self.HYPER_KEEP_MAX_N_POSES = 100  # keep at maximum this number of Glide poses per structvar for SQM scoring
         self.HYPER_KEEP_MAX_DeltaG_POSES = 1.0  # keep per structvar at maximum Glide poses with this energy difference
@@ -142,6 +142,8 @@ class settings:
         # MERELY FOR THE PUBLICATION
         self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
                                      self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
+        # self.FEATURES_FOR_TRAINING = ['nofusion_Eint',  'bondType_SINGLE', 'bondType_AROMATIC', 'MW', 'ring_flexibility',
+        # 'AMW', 'deepFl_logP', 'function_group_count'] + ['plec']
 
         # *****
 
