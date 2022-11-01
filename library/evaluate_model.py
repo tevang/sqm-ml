@@ -66,7 +66,7 @@ def evaluate_learning_model(model, features_df, sel_columns, execution_dir):
                  'bondType_SINGLE', 'bondType_AROMATIC', 'MW', 'ring_flexibility',
                  'AMW', 'deepFl_logP', 'function_group_count']] \
         .assign(SQM_ML_score=-model.predict_proba(features_df[sel_columns])[:, 1]) \
-        .to_csv(os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv.gr"), index=False)
+        .to_csv(os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv.gz"), index=False)
 
     auc_roc = 1 - roc_auc_score(y_true=features_df["is_active"],
                                 y_score=-model.predict_proba(features_df[sel_columns])[:, 1])
