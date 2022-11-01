@@ -1,6 +1,9 @@
 import logging
+import os
 
 import pandas as pd
+
+from library.global_fun import save_pickle
 from library.model_evaluation.classification_metrics import Classification_Metric, Create_Curve
 from sklearn.metrics import roc_auc_score
 from sklearn.preprocessing import minmax_scale
@@ -49,7 +52,22 @@ def _MK(estimator, X, y):
     preds = estimator.predict(X).flatten()
     return Classification_Metric(y, preds).MK()
 
-def evaluate_learning_model(model, features_df, sel_columns):
+def evaluate_learning_model(model, features_df, sel_columns, execution_dir):
+    print(f"Writing scores to file " + os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv"))
+    features_df[['basemolname', 'structvar', 'pose', 'is_active', 'plec_ump1',
+                 'plec_ump2', 'plec_ump3', 'plec_ump4', 'plec_ump5', 'plec_ump6',
+                 'plec_ump7', 'plec_ump8', 'plec_ump9', 'plec_ump10', 'plec_ump11',
+                 'plec_ump12', 'plec_ump13', 'plec_ump14', 'plec_ump15', 'plec_ump16',
+                 'plec_ump17', 'plec_ump18', 'plec_ump19', 'plec_ump20', 'plec_ump21',
+                 'plec_ump22', 'plec_ump23', 'plec_ump24', 'plec_ump25', 'plec_ump26',
+                 'plec_ump27', 'plec_ump28', 'plec_ump29', 'plec_ump30', 'plec_ump31',
+                 'plec_ump32', 'plec_ump33', 'plec_ump34', 'plec_ump35', 'plec_ump36',
+                 'plec_ump37', 'plec_ump38', 'plec_ump39', 'plec_ump40', 'nofusion_Eint',
+                 'bondType_SINGLE', 'bondType_AROMATIC', 'MW', 'ring_flexibility',
+                 'AMW', 'deepFl_logP', 'function_group_count']] \
+        .assign(SQM_ML_score=-model.predict_proba(features_df[sel_columns])[:, 1]) \
+        .to_csv(os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv"), index=False)
+
     auc_roc = 1 - roc_auc_score(y_true=features_df["is_active"],
                                 y_score=-model.predict_proba(features_df[sel_columns])[:, 1])
     DOR = _DOR(model, features_df[sel_columns], features_df["is_active"])

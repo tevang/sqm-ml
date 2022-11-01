@@ -7,8 +7,8 @@ class settings:
 
         self.HYPER_SQM_ML_ROOT_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML'
         self.HYPER_SQM_FOLDER_SUFFIX = '_SQM_MM'
-        self.HYPER_EXECUTION_DIR_NAME = 'execution_dir'
-        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/3D_UMAP_plots'
+        self.HYPER_EXECUTION_DIR_NAME = 'execution_dir_xtest_BONDTYPES_Random_Forest_with_outliers'
+        self.HYPER_PLOTS_DIR = '/media/thomas/external_drive_4TB/thomas-GL552VW/Documents/SQM-ML/plots_SHAP_per_receptor_with_outliers'
         self.HYPER_PROTEIN = 'MK2'
         self.ALL_PROTEINS = [self.HYPER_PROTEIN]    # not hyper-param; just for file naming
         self.HYPER_FORCE_COMPUTATION = False
@@ -22,7 +22,7 @@ class settings:
         self.SAMPLE_WEIGHTS_TYPE = 'featvec_similarity'
         # Random Forest hyper-parameters
         self.max_depth = None
-        self.max_features = 'autom'
+        self.max_features = 'auto'
         self.min_samples_leaf = 1
         self.min_samples_split = 2
         # --
@@ -31,7 +31,7 @@ class settings:
         # --
         self.HYPER_RATIO_SCORED_POSES = 0.8
         self.HYPER_REMOVE_OUTLIER_WRT_WHOLE_SET = False
-        self.HYPER_OUTLIER_MAD_THRESHOLD = 8.0
+        self.HYPER_OUTLIER_MAD_THRESHOLD = 999999999.0
         self.HYPER_OUTLIER_MIN_SCORED_POSE_NUM = 0  # keep only structvars with more than this number of scored poses
         self.HYPER_KEEP_MAX_N_POSES = 100  # keep at maximum this number of Glide poses per structvar for SQM scoring
         self.HYPER_KEEP_MAX_DeltaG_POSES = 1.0  # keep per structvar at maximum Glide poses with this energy difference
@@ -129,19 +129,23 @@ class settings:
         self.HYPER_COMPRESS_PLEC_UMAP = True
         self.N_NEIGHBORS = 50
         self.MIN_DIST = 0.1
-        self.N_COMPONENTS = 3
+        self.N_COMPONENTS = 40
         self.METRIC = 'correlation'
         # --
 
         # Feature Importances
         self.PERM_N_REPEATS = 0 ; # 0 means no permutation feature importances are computed
-        self.PLOT_SHAP = False
-        self.WRITE_SHAP = False
+        self.PLOT_SHAP = False  ; # if True then a window will pop up and execution will halt until you close the window
+        self.WRITE_SHAP = False ; # set this to True and self.PLOT_SHAP = False if you don' want execution to halt
+        self.SHAP_PER_RECEPTOR_SET = False;  # if True then also self.WRITE_SHAP or self.PLOT_SHAP must be True.
+                                            # It uses for training and plots the SHAP values for each receptor set individually
         # --
 
         # MERELY FOR THE PUBLICATION
-        self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
-                                     self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
+        # self.FEATURES_FOR_TRAINING = self.HYPER_SQM_FEATURES + self.HYPER_2D_DESCRIPTORS + \
+        #                              self.HYPER_3D_COMPLEX_DESCRIPTORS + ['plec']
+        self.FEATURES_FOR_TRAINING = ['nofusion_Eint', 'bondType_SINGLE', 'bondType_AROMATIC', 'MW', 'ring_flexibility',
+                                      'AMW', 'deepFl_logP', 'function_group_count'] + ['plec']
 
         # *****
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+import os
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from pathlib import Path
 import pretty_errors
@@ -24,7 +24,7 @@ DESCRIPTION:
                             """,
                             epilog="""
     EXAMPLE:
-    ./EXEC_master_script.py -xtp 'A2A,ACHE,AR,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'    
+    ./EXEC_master_script.py -xtp 'A2A,ACHE,CATL,DHFR,EPHB4,GBA,GR,HIV1RT,JNK2,MDM2,MK2,PARP-1,PPARG,SARS-HCoV,SIRT2,TPA,TP'    
     
     """)
     parser.add_argument("-xtp", "--xtest-proteins", dest="XTEST_PROTEINS", required=True, type=str, default="",
@@ -146,7 +146,9 @@ def launch_pipeline(CROSSVAL_PROTEINS_STRING, XTEST_PROTEINS_STRING, EXECUTION_D
                                     perm_n_repeats=Settings.PERM_N_REPEATS,
                                     plot_SHAP=Settings.PLOT_SHAP,
                                     write_SHAP=Settings.WRITE_SHAP,
+                                    SHAP_per_receptor_set=Settings.SHAP_PER_RECEPTOR_SET,
                                     plots_dir=Settings.HYPER_PLOTS_DIR,
+                                    execution_dir=os.path.join(Settings.HYPER_SQM_ML_ROOT_DIR, Settings.HYPER_EXECUTION_DIR_NAME),
                                     features_for_training=Settings.FEATURES_FOR_TRAINING,
                                     max_depth=Settings.max_depth, max_features=Settings.max_features,
                                     min_samples_leaf=Settings.min_samples_leaf,

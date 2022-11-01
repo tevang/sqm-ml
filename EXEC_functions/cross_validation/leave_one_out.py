@@ -30,7 +30,8 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                 sample_weight_type=None, compress_PCA=False, compress_UMP=False,
                                 PLEC_pca_variance_explained_cutoff=0.8, select_best_features=False,
                                 max_best_features=31, perm_n_repeats=10, plot_SHAP=False,
-                                write_SHAP=False, csv_path_SHAP=None, plots_dir=None,
+                                write_SHAP=False, SHAP_per_receptor_set=False, plots_dir=None,
+                                execution_dir=None,
                                 features_for_training=[], max_depth=None, max_features='auto',
                                                 min_samples_leaf=1, min_samples_split=2):
 
@@ -62,8 +63,11 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
     selected_features = [sf for sf in selected_features if sf in features_for_training]
 
     for crossval_proteins, xtest_proteins in leave_one_out(XTEST_PROTEINS):
+        if SHAP_per_receptor_set:
+            crossval_proteins, xtest_proteins = xtest_proteins, crossval_proteins
+
         mut_features_df = features_df.copy()
-        print(crossval_proteins, xtest_proteins)
+        ColorPrint("CROSSVAL: %s" % crossval_proteins[0], "BOLDGREEN")
         ColorPrint("XTEST: %s" % xtest_proteins[0], "BOLDGREEN")  # always one protein in the list
         crossval_proteins += CROSSVAL_PROTEINS
 
@@ -78,7 +82,8 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
                                           sample_weight=SAMPLE_WEIGHT_FUNCTIONS[sample_weight_type](
                                               mut_features_df, selected_features + mut_features_df.filter(
                                                   regex='^[plecmarcu_]+[0-9]+$').columns.tolist(), xtest_proteins),
-                                          csv_path_SHAP=os.path.join(plots_dir, xtest_proteins[0] + '_SHAP_importances.csv'))
+                                          csv_path_SHAP=os.path.join(plots_dir, f'{crossval_proteins[0]}_SHAP_importances.csv'
+                                          if SHAP_per_receptor_set else f'{xtest_proteins[0]}_SHAP_importances.csv'))
 
         sel_columns = selected_features + mut_features_df.filter(regex='^[plecmarcu_]+[0-9]+$').columns.tolist()
 
@@ -94,7 +99,7 @@ def EXEC_crossval_leave_one_out(features_df, selected_features, CROSSVAL_PROTEIN
         evaluation_dfs.append( evaluate_learning_model(
             model=model,
             features_df=mut_features_df.loc[mut_features_df["protein"].isin(xtest_proteins), :],
-            sel_columns=sel_columns).join(importances_df)
+            sel_columns=sel_columns, execution_dir=execution_dir).join(importances_df)
                                )
         print("\n")
 
