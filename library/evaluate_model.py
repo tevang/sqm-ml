@@ -53,7 +53,7 @@ def _MK(estimator, X, y):
     return Classification_Metric(y, preds).MK()
 
 def evaluate_learning_model(model, features_df, sel_columns, execution_dir):
-    print(f"Writing scores to file " + os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv"))
+    print(f"Writing scores to file " + os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv.gz"))
     features_df[['basemolname', 'structvar', 'pose', 'is_active', 'plec_ump1',
                  'plec_ump2', 'plec_ump3', 'plec_ump4', 'plec_ump5', 'plec_ump6',
                  'plec_ump7', 'plec_ump8', 'plec_ump9', 'plec_ump10', 'plec_ump11',
@@ -66,7 +66,7 @@ def evaluate_learning_model(model, features_df, sel_columns, execution_dir):
                  'bondType_SINGLE', 'bondType_AROMATIC', 'MW', 'ring_flexibility',
                  'AMW', 'deepFl_logP', 'function_group_count']] \
         .assign(SQM_ML_score=-model.predict_proba(features_df[sel_columns])[:, 1]) \
-        .to_csv(os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv"), index=False)
+        .to_csv(os.path.join(execution_dir, f"{features_df['protein'].iloc[0]}_features_SQM-ML_scores.csv.gr"), index=False)
 
     auc_roc = 1 - roc_auc_score(y_true=features_df["is_active"],
                                 y_score=-model.predict_proba(features_df[sel_columns])[:, 1])
